@@ -1,13 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode: true,
-    // Environment variable validation can be hooked here or in lib/env.ts
     env: {
-        // Expose specific env vars to client if needed, though publicRuntimeConfig/NEXT_PUBLIC_ is preferred
+        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     },
-    images: {
-        domains: [], // Add generic domains here for now
-    },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
