@@ -1,0 +1,41 @@
+{
+    "name": "hi2-frontend",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "prepare": "husky"
+    },
+    "dependencies": {
+        "clsx": "^2.1.0",
+        "lucide-react": "^0.469.0",
+        "next": "15.0.0",
+        "react": "19.0.0",
+        "react-dom": "19.0.0",
+        "tailwind-merge": "^2.2.0",
+        "zod": "^3.22.4"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.0",
+        "@types/react": "19.0.0",
+        "@types/react-dom": "19.0.0",
+        "autoprefixer": "^10.4.17",
+        "eslint": "^8.56.0",
+        "eslint-config-next": "15.0.0",
+        "husky": "^9.0.0",
+        "lint-staged": "^15.2.0",
+        "postcss": "^8.4.33",
+        "prettier": "^3.2.4",
+        "tailwindcss": "^3.4.1",
+        "typescript": "^5.3.3"
+    },
+    "lint-staged": {
+        "*.{js,ts,jsx,tsx}": [
+            "eslint --fix",
+            "prettier --write"
+        ]
+    }
+}
