@@ -29,7 +29,7 @@ export default function LoginForm() {
             {/* Background Decorative People - Left Side */}
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
                 {/* People scattered on the left side */}
-                <div className="absolute bottom-[10%] left-[5%] w-[200px] h-auto hidden lg:block">
+                <div className="absolute bottom-[0%] left-[0%] w-[250px] h-auto hidden lg:block">
                     <img
                         src="/images/login/people-group-left.png"
                         alt="Community"
@@ -38,7 +38,7 @@ export default function LoginForm() {
                 </div>
 
                 {/* People network on the right side */}
-                <div className="absolute top-[10%] right-[5%] w-[300px] h-auto hidden lg:block">
+                <div className="absolute top-[0%] right-[0%] w-[250px] h-auto hidden lg:block">
                     <img
                         src="/images/login/people-group-right.png"
                         alt="Community"
@@ -49,7 +49,7 @@ export default function LoginForm() {
 
             {/* Logo - Circular background with logo image */}
             <div className="z-10 mb-6">
-                <div className="w-[90px] h-[90px] flex items-center justify-center p-2">
+                <div className="w-[70px] h-[70px] flex items-center justify-center p-2">
                     <img
                         src="/images/login/logo.png"
                         alt="Hi2 Logo"
@@ -59,36 +59,36 @@ export default function LoginForm() {
             </div>
 
             {/* Login Card */}
-            <div className="w-full max-w-[430px] bg-white rounded-[20px] shadow-2xl px-10 py-8 z-10">
-                <h2 className="text-2xl font-semibold text-center text-[#37CE62] mb-8">Log In</h2>
+            <div className="w-[650px] h-[355px] bg-white rounded-[18px] shadow-2xl px-10 py-8 z-10">
+                <h2 className="text-2l font-semibold text-center text-[#37CE62]">Log In</h2>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     {/* Email Input */}
                     <div className="space-y-1">
-                        <label className="block text-xs text-gray-500 font-medium">
+                        {/* <label className="block text-xs text-gray-500 font-medium">
                             Email
-                        </label>
+                        </label> */}
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="block w-full px-0 py-2 text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-[#37CE62] transition-colors outline-none"
-                            placeholder=""
+                            placeholder="Email"
                         />
                     </div>
 
                     {/* Password Input */}
                     <div className="space-y-1">
-                        <label className="block text-xs text-gray-500 font-medium">
+                        {/* <label className="block text-xs text-gray-500 font-medium">
                             Password
-                        </label>
+                        </label> */}
                         <div className="relative">
                             <input
                                 type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="block w-full px-0 py-2 pr-10 text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-[#37CE62] transition-colors outline-none"
-                                placeholder=""
+                                placeholder="Password"
                             />
                             <button
                                 type="button"
@@ -123,17 +123,18 @@ export default function LoginForm() {
                     </div>
 
                     {/* Login Button */}
-                    <div className="pt-6">
+                    <div className="flex justify-center">
                         <button
                             type="submit"
-                            className="w-32 mx-auto flex justify-center py-2.5 px-6 border border-transparent rounded-full shadow-md text-base font-semibold text-white bg-[#37CE62] hover:bg-[#2db36c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#37CE62] transition-all"
+                            className="flex flex-row justify-center items-center gap-[7px] w-[140px] h-[38px] bg-[#37CE62] rounded-[100px] text-white font-semibold text-base hover:bg-[#2db36c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#37CE62] transition-all"
+                            style={{ padding: '12px 88px' }}
                         >
                             Login
                         </button>
                     </div>
 
                     {/* Register Link */}
-                    <div className="text-center text-sm text-gray-600 pt-2">
+                    <div className="text-center text-sm text-gray-600">
                         Don't have an account ?{' '}
                         <Link href="/register" className="font-bold text-[#E54D4D] hover:text-red-700">
                             Register Now!
@@ -141,7 +142,7 @@ export default function LoginForm() {
                     </div>
 
                     {/* Store Badges */}
-                    <div className="flex justify-center gap-3 pt-4">
+                    <div className="flex justify-center gap-3">
                         <div className="h-7 w-auto cursor-pointer hover:opacity-80 transition-opacity">
                             <img src="/images/login/android.png" alt="Get it on Google Play" className="h-full w-auto" />
                         </div>
