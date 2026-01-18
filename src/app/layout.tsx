@@ -16,13 +16,13 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <html lang="en" className="h-full scroll-smooth">
-            <body className={`${inter.className} min-h-screen bg-background font-sans antialiased`}>
-                <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <AuthProvider>
-                        {children}
-                    </AuthProvider>
-                </div>
+        <html lang="en" className="h-full overflow-hidden">
+            <body className={`${inter.className} h-full bg-background font-sans antialiased overflow-hidden`}>
+                {/* <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"> */}
+                <AuthProvider>
+                    {children}
+                </AuthProvider>
+                {/* </div> */}
             </body>
         </html>
     )
