@@ -1,74 +1,156 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
+import { Eye, EyeOff } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { useAuth } from '../../hooks/useAuth';
-import LoadingSpinner from '../ui/LoadingSpinner';
 
 export default function LoginForm() {
-    const { login, isLoading } = useAuth();
+    const { login } = useAuth();
+
+    // Local state
+    const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
-
-        if (!email || !password) {
-            setError('Please fill in all fields');
-            return;
-        }
-
-        try {
-            await login({ email, password });
-        } catch (err: any) {
-            setError(err.message || 'Login failed. Please check your credentials.');
-        }
+        console.log("Clicked");
+        // login({ email, password });
     };
 
-    if (isLoading) {
-        return <LoadingSpinner />;
-    }
-
     return (
-        <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-6 text-center dark:text-white">Login</h2>
-            {error && (
-                <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded text-sm">
-                    {error}
-                </div>
-            )}
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                        placeholder="you@example.com"
-                        required
+        <div
+            className="h-screen w-screen flex flex-col items-center justify-center relative overflow-hidden"
+            style={{ background: 'linear-gradient(90deg, #37CE62 0%, #1E5A8E 50%, #2C4A7C 100%)' }}
+        >
+            {/* Background Decorative People - Left Side */}
+            <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
+                {/* People scattered on the left side */}
+                <div className="absolute bottom-[10%] left-[5%] w-[200px] h-auto hidden lg:block">
+                    <img
+                        src="/images/login/people-group-left.png"
+                        alt="Community"
+                        className="w-full h-auto object-contain opacity-90"
                     />
                 </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                        placeholder="••••••••"
-                        required
+
+                {/* People network on the right side */}
+                <div className="absolute top-[10%] right-[5%] w-[300px] h-auto hidden lg:block">
+                    <img
+                        src="/images/login/people-group-right.png"
+                        alt="Community"
+                        className="w-full h-auto object-contain opacity-90"
                     />
                 </div>
-                <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition disabled:opacity-50"
-                >
-                    {isLoading ? 'Logging in...' : 'Sign In'}
-                </button>
-            </form>
+            </div>
+
+            {/* Logo - Circular background with logo image */}
+            <div className="z-10 mb-6">
+                <div className="w-[90px] h-[90px] flex items-center justify-center p-2">
+                    <img
+                        src="/images/login/logo.png"
+                        alt="Hi2 Logo"
+                        className="w-full h-full object-contain"
+                    />
+                </div>
+            </div>
+
+            {/* Login Card */}
+            <div className="w-full max-w-[430px] bg-white rounded-[20px] shadow-2xl px-10 py-8 z-10">
+                <h2 className="text-2xl font-semibold text-center text-[#37CE62] mb-8">Log In</h2>
+
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    {/* Email Input */}
+                    <div className="space-y-1">
+                        <label className="block text-xs text-gray-500 font-medium">
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="block w-full px-0 py-2 text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-[#37CE62] transition-colors outline-none"
+                            placeholder=""
+                        />
+                    </div>
+
+                    {/* Password Input */}
+                    <div className="space-y-1">
+                        <label className="block text-xs text-gray-500 font-medium">
+                            Password
+                        </label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="block w-full px-0 py-2 pr-10 text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-[#37CE62] transition-colors outline-none"
+                                placeholder=""
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
+                                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Remember Me & Forgot Password */}
+                    <div className="flex items-center justify-between pt-1">
+                        <div className="flex items-center">
+                            <input
+                                id="remember-me"
+                                name="remember-me"
+                                type="checkbox"
+                                checked={rememberMe}
+                                onChange={(e) => setRememberMe(e.target.checked)}
+                                className="h-3.5 w-3.5 rounded border-gray-300 text-[#37CE62] focus:ring-[#37CE62]"
+                            />
+                            <label htmlFor="remember-me" className="ml-2 block text-xs text-gray-700">
+                                Remember Me
+                            </label>
+                        </div>
+                        <div className="text-xs">
+                            <Link href="#" className="text-gray-600 hover:text-gray-900">
+                                Forgot Password?
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* Login Button */}
+                    <div className="pt-6">
+                        <button
+                            type="submit"
+                            className="w-32 mx-auto flex justify-center py-2.5 px-6 border border-transparent rounded-full shadow-md text-base font-semibold text-white bg-[#37CE62] hover:bg-[#2db36c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#37CE62] transition-all"
+                        >
+                            Login
+                        </button>
+                    </div>
+
+                    {/* Register Link */}
+                    <div className="text-center text-sm text-gray-600 pt-2">
+                        Don't have an account ?{' '}
+                        <Link href="/register" className="font-bold text-[#E54D4D] hover:text-red-700">
+                            Register Now!
+                        </Link>
+                    </div>
+
+                    {/* Store Badges */}
+                    <div className="flex justify-center gap-3 pt-4">
+                        <div className="h-7 w-auto cursor-pointer hover:opacity-80 transition-opacity">
+                            <img src="/images/login/android.png" alt="Get it on Google Play" className="h-full w-auto" />
+                        </div>
+                        <div className="h-7 w-auto cursor-pointer hover:opacity-80 transition-opacity">
+                            <img src="/images/login/ios.png" alt="Download on the App Store" className="h-full w-auto" />
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 }
