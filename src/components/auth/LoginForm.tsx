@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '../../hooks/useAuth';
@@ -23,79 +24,81 @@ export default function LoginForm() {
 
     return (
         <div
-            className="h-screen w-screen flex flex-col items-center justify-center relative overflow-hidden"
+            className="min-h-screen w-screen flex flex-col items-center justify-center relative overflow-hidden px-4 md:px-0"
             style={{ background: 'linear-gradient(90deg, #37CE62 0%, #1E5A8E 50%, #2C4A7C 100%)' }}
         >
-            {/* Background Decorative People - Left Side */}
+            {/* Background Decorative People */}
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
-                {/* People scattered on the left side */}
-                <div className="absolute bottom-[0%] left-[0%] w-[250px] h-auto hidden lg:block">
-                    <img
+                {/* People scattered on the left side - visible on mobile and desktop */}
+                <div className="absolute bottom-[0%] left-[0%] w-[120px] md:w-[180px] lg:w-[250px] h-auto">
+                    <Image
                         src="/images/login/people-group-left.png"
                         alt="Community"
+                        width={250}
+                        height={300}
                         className="w-full h-auto object-contain opacity-90"
+                        sizes="(max-width: 768px) 120px, (max-width: 1024px) 180px, 250px"
                     />
                 </div>
 
-                {/* People network on the right side */}
-                <div className="absolute top-[0%] right-[0%] w-[250px] h-auto hidden lg:block">
-                    <img
+                {/* People network on the right side - visible on mobile and desktop */}
+                <div className="absolute top-[0%] right-[0%] w-[120px] md:w-[180px] lg:w-[250px] h-auto">
+                    <Image
                         src="/images/login/people-group-right.png"
                         alt="Community"
+                        width={250}
+                        height={300}
                         className="w-full h-auto object-contain opacity-90"
+                        sizes="(max-width: 768px) 120px, (max-width: 1024px) 180px, 250px"
                     />
                 </div>
             </div>
 
-            {/* Logo - Circular background with logo image */}
-            <div className="z-10 mb-6">
-                <div className="w-[70px] h-[70px] flex items-center justify-center p-2">
-                    <img
+            {/* Logo - Responsive sizing */}
+            <div className="z-10 mb-4 md:mb-6">
+                <div className="w-[60px] h-[60px] md:w-[70px] md:h-[70px] flex items-center justify-center p-2 relative">
+                    <Image
                         src="/images/login/logo.png"
                         alt="Hi2 Logo"
-                        className="w-full h-full object-contain"
+                        fill
+                        className="object-contain"
+                        sizes="(max-width: 768px) 60px, 70px"
                     />
                 </div>
             </div>
 
-            {/* Login Card */}
-            <div className="w-[650px] h-[355px] bg-white rounded-[18px] shadow-2xl px-10 py-8 z-10">
-                <h2 className="text-2l font-semibold text-center text-[#37CE62]">Log In</h2>
+            {/* Login Card - Responsive sizing */}
+            <div className="w-full max-w-[380px] md:max-w-[450px] lg:max-w-[650px] h-auto bg-white rounded-[18px] shadow-2xl px-6 py-6 md:px-10 md:py-8 z-10">
+                <h2 className="text-xl md:text-2xl font-semibold text-center text-[#37CE62] mb-4 md:mb-6">Log In</h2>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
                     {/* Email Input */}
                     <div className="space-y-1">
-                        {/* <label className="block text-xs text-gray-500 font-medium">
-                            Email
-                        </label> */}
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="block w-full px-0 py-2 text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-[#37CE62] transition-colors outline-none"
+                            className="block w-full px-0 py-2 text-sm md:text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-[#37CE62] transition-colors outline-none"
                             placeholder="Email"
                         />
                     </div>
 
                     {/* Password Input */}
                     <div className="space-y-1">
-                        {/* <label className="block text-xs text-gray-500 font-medium">
-                            Password
-                        </label> */}
                         <div className="relative">
                             <input
                                 type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="block w-full px-0 py-2 pr-10 text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-[#37CE62] transition-colors outline-none"
+                                className="block w-full px-0 py-2 pr-10 text-sm md:text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-[#37CE62] transition-colors outline-none"
                                 placeholder="Password"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 md:hover:text-gray-600 p-1"
                             >
-                                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                {showPassword ? <EyeOff className="h-4 w-4 md:h-5 md:w-5" /> : <Eye className="h-4 w-4 md:h-5 md:w-5" />}
                             </button>
                         </div>
                     </div>
@@ -109,45 +112,44 @@ export default function LoginForm() {
                                 type="checkbox"
                                 checked={rememberMe}
                                 onChange={(e) => setRememberMe(e.target.checked)}
-                                className="h-3.5 w-3.5 rounded border-gray-300 text-[#37CE62] focus:ring-[#37CE62]"
+                                className="h-3 w-3 md:h-3.5 md:w-3.5 rounded border-gray-300 text-[#37CE62] focus:ring-[#37CE62]"
                             />
-                            <label htmlFor="remember-me" className="ml-2 block text-xs text-gray-700">
+                            <label htmlFor="remember-me" className="ml-2 block text-[10px] md:text-xs text-gray-700">
                                 Remember Me
                             </label>
                         </div>
-                        <div className="text-xs">
-                            <Link href="#" className="text-gray-600 hover:text-gray-900">
+                        <div className="text-[10px] md:text-xs">
+                            <Link href="#" className="text-gray-600 md:hover:text-gray-900">
                                 Forgot Password?
                             </Link>
                         </div>
                     </div>
 
                     {/* Login Button */}
-                    <div className="flex justify-center">
+                    <div className="flex justify-center pt-2 md:pt-4">
                         <button
                             type="submit"
-                            className="flex flex-row justify-center items-center gap-[7px] w-[140px] h-[38px] bg-[#37CE62] rounded-[100px] text-white font-semibold text-base hover:bg-[#2db36c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#37CE62] transition-all"
-                            style={{ padding: '12px 88px' }}
+                            className="flex flex-row justify-center items-center gap-[7px] w-[120px] md:w-[140px] h-[36px] md:h-[38px] bg-[#37CE62] rounded-[100px] text-white font-semibold text-sm md:text-base md:hover:bg-[#2db36c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#37CE62] transition-all"
                         >
                             Login
                         </button>
                     </div>
 
                     {/* Register Link */}
-                    <div className="text-center text-sm text-gray-600">
+                    <div className="text-center text-xs md:text-sm text-gray-600 pt-1 md:pt-2">
                         Don't have an account ?{' '}
-                        <Link href="/register" className="font-bold text-[#E54D4D] hover:text-red-700">
+                        <Link href="/register" className="font-bold text-[#E54D4D] md:hover:text-red-700">
                             Register Now!
                         </Link>
                     </div>
 
-                    {/* Store Badges */}
-                    <div className="flex justify-center gap-3">
-                        <div className="h-7 w-auto cursor-pointer hover:opacity-80 transition-opacity">
-                            <img src="/images/login/android.png" alt="Get it on Google Play" className="h-full w-auto" />
+                    {/* Store Badges - Hidden on mobile, visible on desktop */}
+                    <div className="hidden md:flex justify-center gap-3">
+                        <div className="h-6 md:h-7 w-auto cursor-pointer md:hover:opacity-80 transition-opacity">
+                            <Image src="/images/login/android.png" alt="Get it on Google Play" width={120} height={40} className="h-full w-auto" />
                         </div>
-                        <div className="h-7 w-auto cursor-pointer hover:opacity-80 transition-opacity">
-                            <img src="/images/login/ios.png" alt="Download on the App Store" className="h-full w-auto" />
+                        <div className="h-6 md:h-7 w-auto cursor-pointer md:hover:opacity-80 transition-opacity">
+                            <Image src="/images/login/ios.png" alt="Download on the App Store" width={120} height={40} className="h-full w-auto" />
                         </div>
                     </div>
                 </form>
