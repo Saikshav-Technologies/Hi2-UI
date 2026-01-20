@@ -5,17 +5,18 @@ import { useEffect, useState } from 'react';
 import { usersApi } from '../../../lib/api/users';
 import { getUserId } from '../../../lib/auth';
 import { User } from '../../../types/auth';
-import ProfileHeader from '../../../components/dashboard/ProfileHeader';
-import LeftSidebar from '../../../components/dashboard/LeftSidebar';
+import Stories from '../../../components/home/Stories';
 import CreatePost from '../../../components/dashboard/CreatePost';
+import PeopleYouMayKnow from '../../../components/home/PeopleYouMayKnow';
 import PostCard from '../../../components/dashboard/PostCard';
-import { mockUserProfile, mockContacts, mockPosts } from '../../../lib/mockData';
+import LeftSidebarHome from '../../../components/home/LeftSidebarHome';
+import RightSidebar from '../../../components/home/RightSidebar';
+import { mockUserProfile, mockPosts } from '../../../lib/mockData';
 
-export default function DashboardPage() {
+export default function HomePage() {
   const { user: contextUser, logout } = useAuth();
   const [user, setUser] = useState<User | null>(contextUser);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -23,13 +24,11 @@ export default function DashboardPage() {
       if (!userId) return;
 
       setLoading(true);
-      setError('');
       try {
         const userData = await usersApi.getUserById(userId);
         setUser(userData);
       } catch (err: any) {
         console.error('Failed to fetch user data:', err);
-        setError(err.message || 'Failed to load user data');
       } finally {
         setLoading(false);
       }
@@ -52,27 +51,50 @@ export default function DashboardPage() {
   const userName = user?.firstName ? `${user.firstName} ${user.lastName}` : mockUserProfile.name;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div className="w-full px-6 py-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Left Sidebar */}
-        <div className="lg:col-span-3">
-          <LeftSidebar contacts={mockContacts} />
+        <div className="lg:col-span-2 xl:col-span-2">
+          <LeftSidebarHome />
         </div>
 
         {/* Main Feed */}
-        <div className="lg:col-span-9 space-y-6">
-          {/* Profile Header */}
-          <ProfileHeader name={userName} stats={mockUserProfile.stats} />
+        <div className="lg:col-span-7 xl:col-span-7 space-y-4">
+          {/* Stories */}
+          <Stories />
 
           {/* Create Post */}
           <CreatePost userName={userName} />
 
+          {/* People You May Know */}
+          <PeopleYouMayKnow />
+
+          {/* Recent Tab Navigation */}
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="flex border-b border-gray-200">
+              <button className="flex-1 py-3 px-4 text-center font-medium text-green-600 border-b-2 border-green-600">
+                Recent
+              </button>
+              <button className="flex-1 py-3 px-4 text-center font-medium text-gray-600 hover:text-gray-900">
+                Friends
+              </button>
+              <button className="flex-1 py-3 px-4 text-center font-medium text-gray-600 hover:text-gray-900">
+                Popular
+              </button>
+            </div>
+          </div>
+
           {/* Posts Feed */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {mockPosts.map((post) => (
               <PostCard key={post.id} {...post} />
             ))}
           </div>
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="lg:col-span-3 xl:col-span-3">
+          <RightSidebar />
         </div>
       </div>
     </div>

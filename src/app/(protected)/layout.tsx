@@ -4,40 +4,35 @@ import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import DashboardHeader from '../../components/dashboard/DashboardHeader';
 import { ROUTES } from '../../lib/constants';
 
-export default function ProtectedLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
-    const { isAuthenticated, isLoading } = useAuth();
-    const router = useRouter();
+export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
 
-    useEffect(() => {
-        if (!isLoading && !isAuthenticated) {
-            router.push(ROUTES.LOGIN);
-        }
-    }, [isLoading, isAuthenticated, router]);
-
-    if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <LoadingSpinner />
-            </div>
-        );
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push(ROUTES.LOGIN);
     }
+  }, [isLoading, isAuthenticated, router]);
 
-    if (!isAuthenticated) {
-        return null; // or a redirecting message
-    }
-
+  if (isLoading) {
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-950">
-            {/* Simplified layout structure */}
-            <main>
-                {children}
-            </main>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
     );
+  }
+
+  if (!isAuthenticated) {
+    return null; // or a redirecting message
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <DashboardHeader />
+      <main>{children}</main>
+    </div>
+  );
 }
