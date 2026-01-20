@@ -1,34 +1,35 @@
 import { AUTH_ENDPOINTS, API_BASE_URL } from '../constants';
-import { LoginCredentials, RegisterCredentials, AuthState } from '../../types/auth'; // Adjusted path
-import { AuthResponse, ApiResponse } from '../../types/api'; // Adjusted path
-import { getAccessToken } from '../auth';
+import { LoginCredentials, RegisterCredentials } from '../../types/auth'; // Adjusted path
+import { AuthResponseData, ApiResponse } from '../../types/api'; // Adjusted path
 
 // Helper to handle API errors
 const handleResponse = async <T>(response: Response): Promise<T> => {
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'API request failed');
+    const data: ApiResponse<T> = await response.json();
+
+    if (!response.ok || !data.success) {
+        throw new Error(data.message || 'API request failed');
     }
-    return response.json();
+
+    return data.data as T;
 };
 
 export const authApi = {
-    login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
+    login: async (credentials: LoginCredentials): Promise<AuthResponseData> => {
         const response = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.LOGIN}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(credentials),
         });
-        return handleResponse<AuthResponse>(response);
+        return handleResponse<AuthResponseData>(response);
     },
 
-    register: async (credentials: RegisterCredentials): Promise<AuthResponse> => {
+    register: async (credentials: RegisterCredentials): Promise<AuthResponseData> => {
         const response = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.REGISTER}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(credentials),
         });
-        return handleResponse<AuthResponse>(response);
+        return handleResponse<AuthResponseData>(response);
     },
 
     logout: async (): Promise<void> => {
@@ -43,16 +44,5 @@ export const authApi = {
             method: 'POST',
         });
         return handleResponse<{ accessToken: string }>(response);
-    },
-
-    me: async (): Promise<AuthResponse['user']> => {
-        const token = getAccessToken();
-        const response = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.ME}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        return handleResponse<AuthResponse['user']>(response);
     }
 };

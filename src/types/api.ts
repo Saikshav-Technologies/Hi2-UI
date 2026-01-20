@@ -1,18 +1,20 @@
-import { Tokens, User } from './auth';
+import { User } from './auth';
 
 export interface ApiResponse<T = unknown> {
+    success: boolean;
     data?: T;
-    error?: string;
     message?: string;
+    stack?: string; // Only in development/error cases
 }
 
 export interface ApiError {
+    success: false;
     message: string;
-    status: number;
-    errors?: Record<string, string[]>;
+    stack?: string;
 }
 
-export interface AuthResponse {
+export interface AuthResponseData {
     user: User;
-    tokens: Tokens;
+    accessToken: string;
+    refreshToken: string;
 }

@@ -8,18 +8,24 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function LoginForm() {
-    const { login } = useAuth();
+    const { login, isLoading } = useAuth();
 
     // Local state
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Clicked");
-        // login({ email, password });
+        setError('');
+
+        try {
+            await login({ email, password });
+        } catch (err: any) {
+            setError(err.message || 'Login failed. Please try again.');
+        }
     };
 
     return (
@@ -70,6 +76,12 @@ export default function LoginForm() {
             {/* Login Card - Responsive sizing */}
             <div className="w-full max-w-[380px] md:max-w-[450px] lg:max-w-[650px] h-auto bg-white rounded-[18px] shadow-2xl px-6 py-6 md:px-10 md:py-8 z-10">
                 <h2 className="text-xl md:text-2xl font-semibold text-center text-[#37CE62] mb-4 md:mb-6">Log In</h2>
+
+                {error && (
+                    <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+                        {error}
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
                     {/* Email Input */}
@@ -129,16 +141,17 @@ export default function LoginForm() {
                     <div className="flex justify-center pt-2 md:pt-4">
                         <button
                             type="submit"
-                            className="flex flex-row justify-center items-center gap-[7px] w-[120px] md:w-[140px] h-[36px] md:h-[38px] bg-[#37CE62] rounded-[100px] text-white font-semibold text-sm md:text-base md:hover:bg-[#2db36c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#37CE62] transition-all"
+                            disabled={isLoading}
+                            className="flex flex-row justify-center items-center gap-[7px] w-[120px] md:w-[140px] h-[36px] md:h-[38px] bg-[#37CE62] rounded-[100px] text-white font-semibold text-sm md:text-base md:hover:bg-[#2db36c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#37CE62] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Login
+                            {isLoading ? 'Logging in...' : 'Login'}
                         </button>
                     </div>
 
                     {/* Register Link */}
                     <div className="text-center text-xs md:text-sm text-gray-600 pt-1 md:pt-2">
                         Don't have an account ?{' '}
-                        <Link href="/register" className="font-bold text-[#E54D4D] md:hover:text-red-700">
+                        <Link href="/registration" className="font-bold text-[#E54D4D] md:hover:text-red-700">
                             Register Now!
                         </Link>
                     </div>
