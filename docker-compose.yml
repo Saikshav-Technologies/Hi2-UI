@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # Hi2 Frontend Application
+  hi2-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hi2-ui
+    ports:
+      - "3001:3001"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3000
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - hi2-network
+
+  # Uncomment the section below if you want to run Hi2-API backend alongside the frontend
+  # hi2-api:
+  #   build:
+  #     context: ../Hi2-api
+  #     dockerfile: Dockerfile
+  #   container_name: hi2-api
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=production
+  #     - DATABASE_URL=your_database_url_here
+  #   restart: unless-stopped
+  #   networks:
+  #     - hi2-network
+  #   depends_on:
+  #     - postgres
+  
+  # Uncomment if you need a PostgreSQL database
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: hi2-postgres
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     - POSTGRES_USER=hi2user
+  #     - POSTGRES_PASSWORD=hi2password
+  #     - POSTGRES_DB=hi2db
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - hi2-network
+
+networks:
+  hi2-network:
+    driver: bridge
+
+# Uncomment if using PostgreSQL
+# volumes:
+#   postgres-data:
