@@ -1,7 +1,6 @@
 import { AUTH_ENDPOINTS, API_BASE_URL } from '../constants';
-import { LoginCredentials, RegisterCredentials, AuthState, User } from '../../types/auth'; // Adjusted path
+import { LoginCredentials, RegisterCredentials } from '../../types/auth'; // Adjusted path
 import { AuthResponseData, ApiResponse } from '../../types/api'; // Adjusted path
-import { getAccessToken } from '../auth';
 
 // Helper to handle API errors
 const handleResponse = async <T>(response: Response): Promise<T> => {
@@ -45,16 +44,5 @@ export const authApi = {
             method: 'POST',
         });
         return handleResponse<{ accessToken: string }>(response);
-    },
-
-    me: async (): Promise<User> => {
-        const token = getAccessToken();
-        const response = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.ME}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        return handleResponse<User>(response);
     }
 };

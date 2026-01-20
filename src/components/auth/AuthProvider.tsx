@@ -3,9 +3,11 @@
 import React, { createContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { User, LoginCredentials, RegisterCredentials } from '../../types/auth'; // Adjusted path
 import { authApi } from '../../lib/api/auth';
-import { setAccessToken, clearTokens, getAccessToken, setRefreshToken } from '../../lib/auth';
+import { setAccessToken, clearTokens, getAccessToken, setRefreshToken, setUserId } from '../../lib/auth';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '../../lib/constants';
+import { usersApi } from '../../lib/api/users';
+import { getUserId } from '../../lib/auth';
 
 interface AuthContextType {
     user: User | null;
@@ -25,16 +27,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const initAuth = useCallback(async () => {
         const token = getAccessToken();
-        if (!token) {
+        const userId = getUserId();
+
+        if (!token || !userId) {
             setIsLoading(false);
             return;
         }
 
         try {
-            // Logic to fetch user profile using the token would go here
-            // For now we will assume if token exists we try to fetch 'me'
-            // If 'me' endpoint fails (401), we try refresh
-            const userData = await authApi.me();
+            // Fetch user profile using the userId from localStorage
+            const userData = await usersApi.getUserById(userId);
             setUser(userData);
         } catch (error) {
             console.error("Failed to fetch user:", error);
@@ -43,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const { accessToken } = await authApi.refreshToken();
                 setAccessToken(accessToken);
                 // Retry fetching user - simplistic retry
-                const userData = await authApi.me();
+                const userData = await usersApi.getUserById(userId);
                 setUser(userData);
             } catch (refreshError) {
                 console.error("Refresh failed:", refreshError);
@@ -65,6 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const { user, accessToken, refreshToken } = await authApi.login(credentials);
             setAccessToken(accessToken);
             setRefreshToken(refreshToken);
+            setUserId(user.id);
             setUser(user);
             router.push(ROUTES.DASHBOARD);
         } catch (error) {
@@ -81,6 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const { user, accessToken, refreshToken } = await authApi.register(credentials);
             setAccessToken(accessToken);
             setRefreshToken(refreshToken);
+            setUserId(user.id);
             setUser(user);
             router.push(ROUTES.DASHBOARD);
         } catch (error) {
