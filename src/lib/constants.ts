@@ -21,3 +21,21 @@ export const ROUTES = {
     DASHBOARD: '/dashboard',
     HOME: '/',
 };
+
+export const COUNTRIES = [
+    'India',
+    'United States',
+    'United Kingdom',
+    'Canada',
+    'Australia',
+    'Germany',
+    'France',
+    'Netherlands',
+    'Singapore',
+    'Japan',
+    'China',
+    'Brazil',
+    'Mexico',
+    'South Africa',
+    'New Zealand',
+];

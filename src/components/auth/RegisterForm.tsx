@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { COUNTRIES } from '../../lib/constants';
 
 export default function RegisterForm() {
     const router = useRouter();
@@ -25,16 +26,40 @@ export default function RegisterForm() {
         e.preventDefault();
         setError('');
 
-        if (!firstName || !lastName || !email || !password) {
+        // Validate all required fields
+        if (!firstName || !lastName || !email || !password || !gender || !country || !phone) {
             setError('Please fill in all required fields');
+            return;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setError('Please enter a valid email address');
+            return;
+        }
+
+        // Validate password strength (minimum 8 characters)
+        if (password.length < 8) {
+            setError('Password must be at least 8 characters long');
+            return;
+        }
+
+        // Validate phone number (basic validation - at least 10 digits)
+        if (phone.length < 10) {
+            setError('Please enter a valid phone number (at least 10 digits)');
             return;
         }
 
         try {
             await register({
-                name: `${firstName} ${lastName}`,
+                firstName,
+                lastName,
                 email,
-                password
+                password,
+                gender,
+                country,
+                contact: phone
             });
         } catch (err: any) {
             setError(err.message || 'Registration failed. Please try again.');
@@ -175,10 +200,11 @@ export default function RegisterForm() {
                                     className="block w-full px-4 py-3 text-sm md:text-base text-gray-700 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#37CE62] outline-none appearance-none cursor-pointer"
                                 >
                                     <option value="">Select Country</option>
-                                    <option value="netherlands">Netherlands</option>
-                                    <option value="usa">United States</option>
-                                    <option value="uk">United Kingdom</option>
-                                    <option value="india">India</option>
+                                    {COUNTRIES.map((countryName) => (
+                                        <option key={countryName} value={countryName}>
+                                            {countryName}
+                                        </option>
+                                    ))}
                                 </select>
                                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
                             </div>
@@ -188,7 +214,7 @@ export default function RegisterForm() {
                                     onChange={(e) => setGender(e.target.value)}
                                     className="block w-full px-4 py-3 text-sm md:text-base text-gray-700 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#37CE62] outline-none appearance-none cursor-pointer"
                                 >
-                                    <option value="">Male</option>
+                                    <option value="">Select Gender</option>
                                     <option value="male">Male</option>
                                     <option value="female">Female</option>
                                     <option value="other">Other</option>
