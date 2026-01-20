@@ -1,7 +1,18 @@
 export interface User {
     id: string;
     email: string;
-    name: string;
+    firstName: string;
+    lastName: string;
+    username: string | null;
+    bio: string | null;
+    avatarUrl: string | null;
+    gender: string;
+    country: string;
+    contact: string;
+    birthday: string | null;
+    isPrivate: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface Tokens {

@@ -3,7 +3,7 @@
 import React, { createContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { User, LoginCredentials, RegisterCredentials } from '../../types/auth'; // Adjusted path
 import { authApi } from '../../lib/api/auth';
-import { setAccessToken, clearTokens, getAccessToken } from '../../lib/auth';
+import { setAccessToken, clearTokens, getAccessToken, setRefreshToken } from '../../lib/auth';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '../../lib/constants';
 
@@ -62,8 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const login = async (credentials: LoginCredentials) => {
         setIsLoading(true);
         try {
-            const { user, tokens } = await authApi.login(credentials);
-            setAccessToken(tokens.accessToken);
+            const { user, accessToken, refreshToken } = await authApi.login(credentials);
+            setAccessToken(accessToken);
+            setRefreshToken(refreshToken);
             setUser(user);
             router.push(ROUTES.DASHBOARD);
         } catch (error) {
@@ -77,8 +78,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const register = async (credentials: RegisterCredentials) => {
         setIsLoading(true);
         try {
-            const { user, tokens } = await authApi.register(credentials);
-            setAccessToken(tokens.accessToken);
+            const { user, accessToken, refreshToken } = await authApi.register(credentials);
+            setAccessToken(accessToken);
+            setRefreshToken(refreshToken);
             setUser(user);
             router.push(ROUTES.DASHBOARD);
         } catch (error) {

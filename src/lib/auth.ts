@@ -10,9 +10,20 @@ export const setAccessToken = (token: string): void => {
     localStorage.setItem(TOKEN_KEYS.ACCESS_TOKEN, token);
 };
 
+export const getRefreshToken = (): string | null => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem(TOKEN_KEYS.REFRESH_TOKEN);
+};
+
+export const setRefreshToken = (token: string): void => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(TOKEN_KEYS.REFRESH_TOKEN, token);
+};
+
 export const clearTokens = (): void => {
     if (typeof window === 'undefined') return;
     localStorage.removeItem(TOKEN_KEYS.ACCESS_TOKEN);
+    localStorage.removeItem(TOKEN_KEYS.REFRESH_TOKEN);
     // Note: Refresh token cookie should be cleared by the server via HttpOnly cookie
 };
 

@@ -10,6 +10,7 @@ export const AUTH_ENDPOINTS = {
 
 export const TOKEN_KEYS = {
     ACCESS_TOKEN: 'accessToken',
+    REFRESH_TOKEN: 'refreshToken',
     // Refresh token is typically stored in HttpOnly cookies to prevent XSS
     // But we might need a reference if we are handling it client side for some reason (not recommended)
 };
