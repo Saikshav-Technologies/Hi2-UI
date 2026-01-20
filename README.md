@@ -54,6 +54,63 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## 🐳 Docker
+
+This project includes Docker support for containerized deployment.
+
+### Build the Docker Image
+
+```bash
+docker build -t hi2-ui:latest .
+```
+
+### Run the Container
+
+**Development/Local:**
+
+```bash
+docker run -p 3001:3001 -e NEXT_PUBLIC_API_URL=http://localhost:3000 hi2-ui:latest
+```
+
+**Production:**
+
+```bash
+docker run -p 3001:3001 -e NEXT_PUBLIC_API_URL=https://api.yourdomain.com hi2-ui:latest
+```
+
+The application will be accessible at [http://localhost:3001](http://localhost:3001).
+
+### Environment Variables
+
+You can pass environment variables using the `-e` flag or use an env file:
+
+```bash
+docker run -p 3001:3001 --env-file .env.production hi2-ui:latest
+```
+
+### Docker Compose
+
+A `docker-compose.yml` file is included for easier orchestration:
+
+```bash
+# Start the application
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the application
+docker-compose down
+```
+
+The compose file includes:
+- **hi2-ui**: Frontend service on port 3001
+- Optional **hi2-api**: Backend service (uncomment to enable)
+- Optional **postgres**: Database service (uncomment to enable)
+
+To run both frontend and backend together, edit `docker-compose.yml` and uncomment the `hi2-api` and `postgres` services.
+
+
 ## 📂 Project Structure
 
 The project follows a modular, monorepo-ready structure:
