@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -7,9 +8,10 @@ export default function DashboardHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const { logout } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const isHome = pathname === '/home';
-  const isDashboard = pathname === '/dashboard';
+  const isDashboard = pathname === '/';
 
   return (
     <header className="bg-[#2c3975] text-white px-6 py-2.5 flex items-center justify-between sticky top-0 z-50 shadow-md">
@@ -39,9 +41,8 @@ export default function DashboardHeader() {
       <nav className="hidden md:flex items-center space-x-6">
         <button
           onClick={() => router.push('/home')}
-          className={`p-3 rounded-lg transition-colors ${
-            isHome ? 'bg-[#3d4a7f]' : 'hover:bg-[#3d4a7f]'
-          }`}
+          className={`p-3 rounded-lg transition-colors ${isHome ? 'bg-[#3d4a7f]' : 'hover:bg-[#3d4a7f]'
+            }`}
         >
           <svg className="w-7 h-7 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
@@ -104,29 +105,53 @@ export default function DashboardHeader() {
             />
           </svg>
         </button>
-        <button
-          onClick={() => router.push('/dashboard')}
-          className={`flex items-center space-x-2 p-1.5 rounded-lg transition-colors ${
-            isDashboard ? 'bg-[#3d4a7f]' : 'hover:bg-[#3d4a7f]'
-          }`}
-        >
-          <div className="w-9 h-9 rounded-full bg-gray-400 overflow-hidden flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+        <div className="relative">
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className={`flex items-center space-x-2 p-1.5 rounded-lg transition-colors ${isDashboard ? 'bg-[#3d4a7f]' : 'hover:bg-[#3d4a7f]'
+              }`}
+          >
+            <div className="w-9 h-9 rounded-full bg-gray-400 overflow-hidden flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <svg className="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
-                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                 clipRule="evenodd"
               />
             </svg>
-          </div>
-          <svg className="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fillRule="evenodd"
-              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
+          </button>
+
+          {isDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+              <button
+                onClick={() => {
+                  router.push('/');
+                  setIsDropdownOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Dashboard
+              </button>
+              <button
+                onClick={() => {
+                  logout();
+                  setIsDropdownOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

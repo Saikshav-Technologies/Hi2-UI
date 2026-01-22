@@ -18,8 +18,8 @@ export const TOKEN_KEYS = {
 export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/registration',
-  DASHBOARD: '/dashboard',
-  HOME: '/',
+  DASHBOARD: '/',
+  HOME: '/home',
 };
 
 export const COUNTRIES = [
