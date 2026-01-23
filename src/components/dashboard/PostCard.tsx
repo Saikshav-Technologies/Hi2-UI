@@ -79,7 +79,7 @@ export default function PostCard({
 
       {/* Post Images Grid (2 Top, 3 Bottom) */}
       {images.length > 0 && (
-        <div className="grid grid-cols-6 grid-rows-2 gap-1 h-80 w-full mt-2">
+        <div className="grid grid-cols-6 grid-rows-2 gap-1 h-80 md:h-[450px] w-full mt-2">
           {/* First two images take top half (3 cols each) */}
           <div className="col-span-3 relative h-full rounded-xl overflow-hidden">
             <Image src={images[0]} alt="Post" fill className="object-cover" />

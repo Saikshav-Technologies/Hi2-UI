@@ -11,7 +11,9 @@ import FeaturedSection from '../../components/dashboard/FeaturedSection';
 import CreatePost from '../../components/dashboard/CreatePost';
 import PostCard from '../../components/dashboard/PostCard';
 import BottomNav from '../../components/dashboard/BottomNav';
-import { mockUserProfile } from '../../lib/mockData';
+import LeftSidebar from '../../components/dashboard/LeftSidebar';
+import ProfileTabs from '../../components/dashboard/ProfileTabs';
+import { mockUserProfile, mockContacts } from '../../lib/mockData';
 
 export default function DashboardPage() {
     const { user: contextUser } = useAuth();
@@ -70,27 +72,67 @@ export default function DashboardPage() {
 
     return (
         <div className="min-h-screen bg-[#f3f4f6] pb-24 relative font-sans">
-            {/* Main Content Area */}
-            <main className="max-w-2xl mx-auto space-y-3">
+            {/* Desktop Profile Header */}
+            <div className="hidden md:block">
                 <ProfileHeader
                     name={userName}
                     profileImage={user?.avatarUrl || undefined}
+                    coverImage="/images/profile/m-top-girl.png" // Explicitly pass cover if needed, or rely on default
                     stats={{
                         posts: user?.posts || 0,
                         followers: user?.followers || 0,
                         following: user?.following || 0
                     }}
                 />
+            </div>
+            {/* Desktop Profile Tabs */}
+            <ProfileTabs />
 
-                <div className="space-y-3">
-                    <IntroSection />
-                    <FeaturedSection />
-                    <CreatePost userName={userName} userImage={user?.avatarUrl || undefined} />
-                    <PostCard {...mockupPost} />
+            {/* Main Content Area */}
+            <main className="max-w-7xl mx-auto md:px-6 md:py-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 md:gap-6">
+                    {/* Left Sidebar (Desktop Only) */}
+                    <div className="hidden md:block md:col-span-1">
+                        <LeftSidebar contacts={mockContacts} />
+                    </div>
+
+                    {/* Right Feed / Mobile Content */}
+                    <div className="md:col-span-3 space-y-3">
+                        {/* Mobile Components (Hidden on Desktop) */}
+                        <div className="md:hidden space-y-3">
+                            <ProfileHeader
+                                name={userName}
+                                profileImage={user?.avatarUrl || undefined}
+                                stats={{
+                                    posts: user?.posts || 0,
+                                    followers: user?.followers || 0,
+                                    following: user?.following || 0
+                                }}
+                            />
+                            <div className="px-4 space-y-3">
+                                <IntroSection />
+                                <FeaturedSection />
+                            </div>
+                        </div>
+
+                        {/* Desktop Profile Header Placement (If needed differently, otherwise reusing consistent header at top is better) */}
+                        {/* Actually, ProfileHeader design changes internally. We want it FULL WIDTH at top for desktop. 
+                            So we should place ProfileHeader OUTSIDE the grid, at the very top. 
+                        */}
+
+                        <div className="md:px-0 px-4 space-y-4">
+                            <CreatePost userName={userName} userImage={user?.avatarUrl || undefined} />
+                            <PostCard {...mockupPost} />
+                            {/* Duplicate PostCard for feed demonstration */}
+                            <PostCard {...{ ...mockupPost, content: "Another beautiful day!", images: [mockupPost.images[0], mockupPost.images[1]], likes: 120, comments: 45 }} />
+                        </div>
+                    </div>
                 </div>
             </main>
 
-            <BottomNav />
+            <div className="md:hidden">
+                <BottomNav />
+            </div>
         </div>
     );
 }
