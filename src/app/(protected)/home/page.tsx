@@ -6,12 +6,13 @@ import { usersApi } from '../../../lib/api/users';
 import { getUserId } from '../../../lib/auth';
 import { User } from '../../../types/auth';
 import Stories from '../../../components/home/Stories';
-import CreatePost from '../../../components/dashboard/CreatePost';
+import CreatePost from '../../../components/profile/CreatePost';
 import PeopleYouMayKnow from '../../../components/home/PeopleYouMayKnow';
-import PostCard from '../../../components/dashboard/PostCard';
+import PostCard from '../../../components/profile/PostCard';
 import LeftSidebarHome from '../../../components/home/LeftSidebarHome';
 import RightSidebar from '../../../components/home/RightSidebar';
-import { mockUserProfile, mockPosts } from '../../../lib/mockData';
+import { mockUserProfile } from '../../../lib/mockData';
+import { mockPosts } from '../../../mocks';
 
 export default function HomePage() {
   const { user: contextUser, logout } = useAuth();
@@ -64,7 +65,7 @@ export default function HomePage() {
           <Stories />
 
           {/* Create Post */}
-          <CreatePost userName={userName} />
+          <CreatePost userName={userName} userAvatar={mockUserProfile.profileImage} />
 
           {/* People You May Know */}
           <PeopleYouMayKnow />

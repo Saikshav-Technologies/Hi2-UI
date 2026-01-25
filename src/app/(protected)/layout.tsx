@@ -4,7 +4,6 @@ import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import DashboardHeader from '../../components/dashboard/DashboardHeader';
 import { ROUTES } from '../../lib/constants';
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
@@ -31,7 +30,6 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <DashboardHeader />
       <main>{children}</main>
     </div>
   );
