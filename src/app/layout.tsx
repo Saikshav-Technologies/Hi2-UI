@@ -1,9 +1,13 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Spline_Sans } from 'next/font/google';
 import { AuthProvider } from '../components/auth/AuthProvider';
 
 const inter = Inter({ subsets: ['latin'] });
+const splineSans = Spline_Sans({
+  subsets: ['latin'],
+  variable: '--font-spline-sans',
+});
 
 export const metadata: Metadata = {
   title: 'Hi2 Social Media',
@@ -13,7 +17,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-background font-sans antialiased`}>
+      <body className={`${inter.className} ${splineSans.variable} bg-background font-sans antialiased`}>
         {/* <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"> */}
         <AuthProvider>{children}</AuthProvider>
         {/* </div> */}
