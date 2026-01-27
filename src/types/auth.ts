@@ -13,6 +13,9 @@ export interface User {
     isPrivate: boolean;
     createdAt: string;
     updatedAt: string;
+    posts?: number;
+    followers?: number;
+    following?: number;
 }
 
 export interface Tokens {
