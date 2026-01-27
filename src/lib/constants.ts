@@ -20,6 +20,7 @@ export const ROUTES = {
   REGISTER: '/registration',
   DASHBOARD: '/',
   HOME: '/home',
+  ONBOARDING: '/onboarding',
 };
 
 export const COUNTRIES = [
