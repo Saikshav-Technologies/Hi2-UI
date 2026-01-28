@@ -1,11 +1,35 @@
 'use client';
 
 import Image from 'next/image';
-import { Search } from 'lucide-react';
-import { useState } from 'react';
+import { Search, LogOut } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function TopNavigation() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+    const profileMenuRef = useRef<HTMLDivElement>(null);
+    const { logout } = useAuth();
+
+    // Close profile menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+                setIsProfileMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
 
     return (
         <nav className="bg-[#131c61] text-white sticky top-0 z-50 shadow-md">
@@ -79,18 +103,36 @@ export default function TopNavigation() {
                             <Image src="/images/d-header-message.png" alt="Messages" width={24} height={24} />
                         </button>
 
-                        {/* Profile Avatar */}
-                        <button className="hover:opacity-90 transition-opacity">
-                            <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white/20">
-                                <Image
-                                    src="/images/profile/m-profile-girl.png"
-                                    alt="Profile"
-                                    width={36}
-                                    height={36}
-                                    className="object-cover"
-                                />
-                            </div>
-                        </button>
+                        {/* Profile Avatar with Dropdown */}
+                        <div className="relative" ref={profileMenuRef}>
+                            <button
+                                className="hover:opacity-90 transition-opacity"
+                                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                            >
+                                <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white/20">
+                                    <Image
+                                        src="/images/profile/m-profile-girl.png"
+                                        alt="Profile"
+                                        width={36}
+                                        height={36}
+                                        className="object-cover"
+                                    />
+                                </div>
+                            </button>
+
+                            {/* Profile Dropdown Menu */}
+                            {isProfileMenuOpen && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                                    >
+                                        <LogOut className="w-4 h-4" />
+                                        <span className="text-sm font-medium">Logout</span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Mobile Menu Button */}
                         <button
@@ -146,6 +188,14 @@ export default function TopNavigation() {
                         <button className="flex items-center space-x-3 w-full hover:bg-white/5 p-3 rounded-lg transition-colors">
                             <Image src="/images/d-header-message.png" alt="Messages" width={20} height={20} />
                             <span className="text-sm font-medium">Messages</span>
+                        </button>
+                        <div className="border-t border-white/10 my-2"></div>
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center space-x-3 w-full hover:bg-white/5 p-3 rounded-lg transition-colors text-red-400"
+                        >
+                            <LogOut className="w-5 h-5" />
+                            <span className="text-sm font-medium">Logout</span>
                         </button>
                     </div>
                 </div>
