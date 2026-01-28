@@ -6,11 +6,15 @@ import { AuthResponseData, ApiResponse } from '../../types/api'; // Adjusted pat
 const handleResponse = async <T>(response: Response): Promise<T> => {
     const data: ApiResponse<T> = await response.json();
 
-    if (!response.ok || !data.success) {
-        throw new Error(data.message || 'API request failed');
+    // Success criteria: Status 200 AND success: true
+    if (response.status === 200 && data.success === true) {
+        return data.data as T;
     }
 
-    return data.data as T;
+    // Failure: Any other status OR success: false
+    // Use backend error message if available, otherwise standard message
+    const errorMessage = data.message || 'Login failed. Please try again.';
+    throw new Error(errorMessage);
 };
 
 export const authApi = {

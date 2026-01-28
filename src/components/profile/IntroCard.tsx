@@ -1,6 +1,7 @@
 'use client';
 
 import { MapPin, Home, Briefcase } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface IntroCardProps {
     bio: string;
@@ -12,12 +13,21 @@ interface IntroCardProps {
 }
 
 export default function IntroCard({ bio, location, work }: IntroCardProps) {
+    const router = useRouter();
+
+    const handleEditClick = () => {
+        router.push('/profile-setting');
+    };
+
     return (
         <div className="bg-white rounded-lg shadow-sm p-6">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-[#2c3975]">Introduction</h3>
-                <button className="bg-[#131c61] text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-[#0f1549] transition-colors">
+                <button
+                    onClick={handleEditClick}
+                    className="bg-[#131c61] text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-[#0f1549] transition-colors"
+                >
                     Edit
                 </button>
             </div>
@@ -56,7 +66,10 @@ export default function IntroCard({ bio, location, work }: IntroCardProps) {
 
             {/* Action Buttons */}
             <div className="space-y-2">
-                <button className="w-full bg-[#131c61] text-white py-2 rounded-lg font-medium hover:bg-[#0f1549] transition-colors">
+                <button
+                    onClick={handleEditClick}
+                    className="w-full bg-[#131c61] text-white py-2 rounded-lg font-medium hover:bg-[#0f1549] transition-colors"
+                >
                     Edit Details
                 </button>
                 <button className="w-full bg-white border-2 border-gray-200 text-[#2c3975] py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors">

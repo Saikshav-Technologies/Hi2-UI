@@ -16,8 +16,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} ${splineSans.variable} bg-background font-sans antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} ${splineSans.variable} bg-background font-sans antialiased`} suppressHydrationWarning>
         {/* <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"> */}
         <AuthProvider>{children}</AuthProvider>
         {/* </div> */}

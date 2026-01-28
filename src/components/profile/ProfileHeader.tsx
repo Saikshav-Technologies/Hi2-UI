@@ -220,9 +220,8 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
 
             {/* Camera/Edit Icon Badge (Bottom Left) */}
             <div
-              className={`absolute bottom-2 left-2 bg-[#131c61] rounded-full p-2 border-2 border-white transition-colors ${
-                isUploading ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-[#0f1549]'
-              }`}
+              className={`absolute bottom-2 left-2 bg-[#131c61] rounded-full p-2 border-2 border-white transition-colors ${isUploading ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-[#0f1549]'
+                }`}
               onClick={isUploading ? undefined : handleProfileImageClick}
               role="button"
               tabIndex={isUploading ? -1 : 0}
@@ -350,6 +349,16 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
                 <span>Add Story</span>
               </button>
 
+              {/* Music Button */}
+              <button className="bg-[#131c61] text-white p-2 rounded-full border border-[#e2e5e9] hover:bg-[#0f1549] transition-colors">
+                <Image
+                  src="/images/profile/music-icon.png"
+                  alt="Music"
+                  width={20}
+                  height={20}
+                />
+              </button>
+
               {/* Lock Button */}
               <button className="bg-[#131c61] text-white p-2 rounded-full hover:bg-[#0f1549] transition-colors">
                 <Lock className="w-5 h-5" />
@@ -387,6 +396,14 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
           <button className="flex-1 bg-[#131c61] text-white px-4 py-2 rounded-full flex items-center justify-center space-x-2 font-medium text-sm">
             <Plus className="w-4 h-4" />
             <span>Add Story</span>
+          </button>
+          <button className="bg-[#131c61] text-white p-2 rounded-full border border-[#e2e5e9]">
+            <Image
+              src="/images/profile/music-icon.png"
+              alt="Music"
+              width={20}
+              height={20}
+            />
           </button>
           <button className="bg-[#131c61] text-white p-2 rounded-full">
             <Lock className="w-5 h-5" />

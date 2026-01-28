@@ -7,6 +7,12 @@ export const AUTH_ENDPOINTS = {
   LOGOUT: '/auth/logout',
 };
 
+export const USER_ENDPOINTS = {
+  PROFILE: '/users/profile',
+  AVATAR_UPLOAD: '/users/avatar/upload-url',
+  AVATAR_PRESIGNED: '/users/avatar/presigned-url',
+};
+
 export const TOKEN_KEYS = {
   ACCESS_TOKEN: 'accessToken',
   REFRESH_TOKEN: 'refreshToken',
