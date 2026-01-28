@@ -12,7 +12,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push(ROUTES.LOGIN);
+      router.push(ROUTES.ONBOARDING);
     }
   }, [isLoading, isAuthenticated, router]);
 
