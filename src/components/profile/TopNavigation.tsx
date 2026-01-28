@@ -1,21 +1,23 @@
 'use client';
 
 import Image from 'next/image';
-import { Search, LogOut } from 'lucide-react';
+import { Search, LogOut, User, Settings } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useRouter } from 'next/navigation';
+import { clearTokens, getAccessToken, getRefreshToken } from '@/lib/auth';
 
 export default function TopNavigation() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-    const profileMenuRef = useRef<HTMLDivElement>(null);
-    const { logout } = useAuth();
+    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
-    // Close profile menu when clicking outside
+    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
-                setIsProfileMenuOpen(false);
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsProfileDropdownOpen(false);
             }
         };
 
@@ -24,10 +26,37 @@ export default function TopNavigation() {
     }, []);
 
     const handleLogout = async () => {
+        if (isLoggingOut) return;
+
+        setIsLoggingOut(true);
+        setIsProfileDropdownOpen(false);
+
         try {
-            await logout();
+            const accessToken = getAccessToken();
+            const refreshToken = getRefreshToken();
+
+            if (accessToken && refreshToken) {
+                await fetch('http://localhost:3000/api/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        refreshToken: refreshToken,
+                    }),
+                });
+            }
         } catch (error) {
-            console.error('Logout failed:', error);
+            console.error('Logout error:', error);
+            // Continue with logout even if API call fails
+        } finally {
+            // Clear tokens and redirect regardless of API response
+            clearTokens();
+            // Use replace instead of push to prevent back navigation
+            router.replace('/login');
+            // Force a hard reload to clear all state
+            window.location.href = '/login';
         }
     };
 
@@ -95,7 +124,12 @@ export default function TopNavigation() {
 
                         {/* Notification Bell */}
                         <button className="p-2 hover:bg-white/10 rounded-lg transition-colors hidden md:block relative">
-                            <Image src="/images/d-header-notification.png" alt="Notifications" width={24} height={24} />
+                            <Image
+                                src="/images/d-header-notification.png"
+                                alt="Notifications"
+                                width={24}
+                                height={24}
+                            />
                         </button>
 
                         {/* Messages */}
@@ -104,10 +138,10 @@ export default function TopNavigation() {
                         </button>
 
                         {/* Profile Avatar with Dropdown */}
-                        <div className="relative" ref={profileMenuRef}>
+                        <div className="relative" ref={dropdownRef}>
                             <button
                                 className="hover:opacity-90 transition-opacity"
-                                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                             >
                                 <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white/20">
                                     <Image
@@ -120,27 +154,82 @@ export default function TopNavigation() {
                                 </div>
                             </button>
 
-                            {/* Profile Dropdown Menu */}
-                            {isProfileMenuOpen && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                            {/* Dropdown Menu */}
+                            {isProfileDropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2 z-50 border border-gray-200">
+                                    <div className="px-4 py-3 border-b border-gray-100">
+                                        <p className="text-sm font-semibold text-gray-900">My Account</p>
+                                        <p className="text-xs text-gray-500 mt-1">Manage your profile</p>
+                                    </div>
+
                                     <button
-                                        onClick={handleLogout}
-                                        className="w-full flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                                        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-3"
+                                        onClick={() => {
+                                            setIsProfileDropdownOpen(false);
+                                            router.push('/');
+                                        }}
                                     >
-                                        <LogOut className="w-4 h-4" />
-                                        <span className="text-sm font-medium">Logout</span>
+                                        <User className="w-4 h-4 text-gray-600" />
+                                        <span className="text-sm text-gray-700">View Profile</span>
+                                    </button>
+
+                                    <button
+                                        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-3"
+                                        onClick={() => {
+                                            setIsProfileDropdownOpen(false);
+                                        }}
+                                    >
+                                        <Settings className="w-4 h-4 text-gray-600" />
+                                        <span className="text-sm text-gray-700">Settings</span>
+                                    </button>
+
+                                    <div className="border-t border-gray-100 my-1"></div>
+
+                                    <button
+                                        className="w-full px-4 py-3 text-left hover:bg-red-50 transition-colors flex items-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        onClick={handleLogout}
+                                        disabled={isLoggingOut}
+                                    >
+                                        {isLoggingOut ? (
+                                            <svg
+                                                className="w-4 h-4 text-red-600 animate-spin"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <circle
+                                                    className="opacity-25"
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                    stroke="currentColor"
+                                                    strokeWidth="4"
+                                                ></circle>
+                                                <path
+                                                    className="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                ></path>
+                                            </svg>
+                                        ) : (
+                                            <LogOut className="w-4 h-4 text-red-600" />
+                                        )}
+                                        <span className="text-sm text-red-600 font-medium">
+                                            {isLoggingOut ? 'Logging out...' : 'Logout'}
+                                        </span>
                                     </button>
                                 </div>
                             )}
                         </div>
 
                         {/* Mobile Menu Button */}
-                        <button
-                            className="lg:hidden p-2"
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        >
+                        <button className="lg:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M4 6h16M4 12h16M4 18h16"
+                                />
                             </svg>
                         </button>
                     </div>
@@ -188,14 +277,6 @@ export default function TopNavigation() {
                         <button className="flex items-center space-x-3 w-full hover:bg-white/5 p-3 rounded-lg transition-colors">
                             <Image src="/images/d-header-message.png" alt="Messages" width={20} height={20} />
                             <span className="text-sm font-medium">Messages</span>
-                        </button>
-                        <div className="border-t border-white/10 my-2"></div>
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center space-x-3 w-full hover:bg-white/5 p-3 rounded-lg transition-colors text-red-400"
-                        >
-                            <LogOut className="w-5 h-5" />
-                            <span className="text-sm font-medium">Logout</span>
                         </button>
                     </div>
                 </div>
