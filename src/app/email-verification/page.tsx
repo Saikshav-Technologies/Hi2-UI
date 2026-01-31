@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { API_BASE_URL } from '@/lib/constants';
 
 const splineSans = 'font-[family-name:var(--font-spline-sans)]';
 
@@ -42,16 +43,19 @@ export default function EmailVerificationPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/password-reset/verify-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          otp: otpValue,
-        }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/auth/password-reset/verify-otp`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            otp: otpValue,
+          }),
+        }
+      );
 
       const data = await response.json();
 

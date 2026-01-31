@@ -5,6 +5,7 @@ import { Plus, Lock } from 'lucide-react';
 import { ProfileStats } from '@/mocks';
 import { useRef, useState, useEffect } from 'react';
 import { getAccessToken, getUserId } from '@/lib/auth';
+import { API_BASE_URL } from '@/lib/constants';
 
 interface ProfileHeaderProps {
   name: string;
@@ -34,7 +35,7 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
         const key = `avatars/${userId}`;
 
         const response = await fetch(
-          `http://localhost:3000/api/users/avatar/presigned-url/?key=avatars/750d4606-43e9-4c39-a0f9-684887c67528/1769539335409-avatar`,
+          `${API_BASE_URL}/users/avatar/presigned-url/?key=${key}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -90,16 +91,19 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
         return;
       }
 
-      const presignedResponse = await fetch('http://localhost:3000/api/users/avatar/upload-url', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contentType: file.type,
-        }),
-      });
+      const presignedResponse = await fetch(
+        `${API_BASE_URL}/users/avatar/upload-url`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contentType: file.type,
+          }),
+        }
+      );
 
       if (!presignedResponse.ok) {
         throw new Error('Failed to get upload URL');
@@ -130,7 +134,7 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
 
       // Step 3: Fetch the new presigned URL to display the image
       const newAvatarResponse = await fetch(
-        `http://localhost:3000/api/users/avatar/presigned-url/?key=${encodeURIComponent(key)}`,
+        `${API_BASE_URL}/users/avatar/presigned-url/?key=${encodeURIComponent(key)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -220,8 +224,9 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
 
             {/* Camera/Edit Icon Badge (Bottom Left) */}
             <div
-              className={`absolute bottom-2 left-2 bg-[#131c61] rounded-full p-2 border-2 border-white transition-colors ${isUploading ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-[#0f1549]'
-                }`}
+              className={`absolute bottom-2 left-2 bg-[#131c61] rounded-full p-2 border-2 border-white transition-colors ${
+                isUploading ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-[#0f1549]'
+              }`}
               onClick={isUploading ? undefined : handleProfileImageClick}
               role="button"
               tabIndex={isUploading ? -1 : 0}
@@ -351,12 +356,7 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
 
               {/* Music Button */}
               <button className="bg-[#131c61] text-white p-2 rounded-full border border-[#e2e5e9] hover:bg-[#0f1549] transition-colors">
-                <Image
-                  src="/images/profile/music-icon.png"
-                  alt="Music"
-                  width={20}
-                  height={20}
-                />
+                <Image src="/images/profile/music-icon.png" alt="Music" width={20} height={20} />
               </button>
 
               {/* Lock Button */}
@@ -398,12 +398,7 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
             <span>Add Story</span>
           </button>
           <button className="bg-[#131c61] text-white p-2 rounded-full border border-[#e2e5e9]">
-            <Image
-              src="/images/profile/music-icon.png"
-              alt="Music"
-              width={20}
-              height={20}
-            />
+            <Image src="/images/profile/music-icon.png" alt="Music" width={20} height={20} />
           </button>
           <button className="bg-[#131c61] text-white p-2 rounded-full">
             <Lock className="w-5 h-5" />
