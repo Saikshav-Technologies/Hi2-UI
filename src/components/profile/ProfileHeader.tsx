@@ -3,9 +3,10 @@
 import Image from 'next/image';
 import { Plus, Lock } from 'lucide-react';
 import { ProfileStats } from '@/mocks';
-import { useRef, useState, useEffect } from 'react';
-import { getAccessToken, getUserId } from '@/lib/auth';
+import { useRef, useState } from 'react';
+import { getAccessToken } from '@/lib/auth';
 import { API_BASE_URL } from '@/lib/constants';
+import { useAvatarUrl } from '@/hooks/useAvatarUrl';
 
 interface ProfileHeaderProps {
   name: string;
@@ -18,55 +19,8 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
-  const [currentAvatar, setCurrentAvatar] = useState(avatar);
+  const { avatarUrl: currentAvatar, setAvatarUrl } = useAvatarUrl(avatar);
   const [avatarKey, setAvatarKey] = useState<string | null>(null);
-
-  // Fetch user's avatar on component mount
-  useEffect(() => {
-    const fetchUserAvatar = async () => {
-      try {
-        const token = getAccessToken();
-        const userId = getUserId();
-
-        if (!token || !userId) return;
-
-        const user = await fetch(`${API_BASE_URL}/users/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }).then((res) => res.json());
-        user.data.avatarUrl && setAvatarKey(user.data.avatarUrl);
-        // Construct the key - you might need to adjust this based on your backend response
-        // For now, using a pattern like: avatars/{userId}/{timestamp}-avatar
-        // const key = `avatars/${userId}`;
-
-        const key = user.data.avatarUrl;
-
-        console.log('Avatar key:', key);
-        // Fetch the avatar URL
-        const response = await fetch(`${API_BASE_URL}/users/avatar/presigned-url/?key=${key}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        console.log('Response fetching avatar:', response);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.data?.url) {
-            setCurrentAvatar(data.data.url);
-            setAvatarKey(key);
-          }
-        }
-        console.log('Fetched avatar URL:', currentAvatar);
-      } catch (error) {
-        console.error('Error fetching avatar:', error);
-        // Keep the default avatar on error
-      }
-    };
-
-    fetchUserAvatar();
-  }, []);
 
   const handleProfileImageClick = () => {
     fileInputRef.current?.click();
@@ -141,7 +95,7 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
       console.log('Uploaded image key:', encodeURIComponent(key));
       // Step 3: Fetch the new presigned URL to display the image
       const newAvatarResponse = await fetch(
-        `${API_BASE_URL}/users/avatar/presigned-url/?key=${(key)}`,
+        `${API_BASE_URL}/users/avatar/presigned-url/?key=${key}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -152,7 +106,7 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
       if (newAvatarResponse.ok) {
         const newAvatarData = await newAvatarResponse.json();
         if (newAvatarData.success && newAvatarData.data?.url) {
-          setCurrentAvatar(newAvatarData.data.url);
+          setAvatarUrl(newAvatarData.data.url);
           setAvatarKey(key);
         }
       }
@@ -223,7 +177,7 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
                   className="object-cover"
                   onError={() => {
                     // Fallback to default if image fails to load
-                    setCurrentAvatar('/images/profile/default-avatar.png');
+                    setAvatarUrl('/images/profile/default-avatar.png');
                   }}
                 />
               </div>

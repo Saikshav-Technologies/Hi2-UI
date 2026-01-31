@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { clearTokens, getAccessToken, getRefreshToken } from '@/lib/auth';
 import { API_BASE_URL } from '@/lib/constants';
+import { useAvatarUrl } from '@/hooks/useAvatarUrl';
 
 export default function TopNavigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,6 +14,7 @@ export default function TopNavigation() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { avatarUrl, setAvatarUrl } = useAvatarUrl('/images/profile/default-avatar.png');
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -146,11 +148,12 @@ export default function TopNavigation() {
               >
                 <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white/20">
                   <Image
-                    src="/images/profile/m-profile-girl.png"
+                    src={avatarUrl}
                     alt="Profile"
                     width={36}
                     height={36}
                     className="object-cover"
+                    onError={() => setAvatarUrl('/images/profile/default-avatar.png')}
                   />
                 </div>
               </button>
