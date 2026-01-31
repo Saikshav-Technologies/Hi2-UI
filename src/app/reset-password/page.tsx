@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/constants';
 
 const splineSans = 'font-[family-name:var(--font-spline-sans)]';
 
@@ -72,7 +73,7 @@ export default function ResetPasswordPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/password-reset/reset', {
+      const response = await fetch(`${API_BASE_URL}/auth/password-reset/reset`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

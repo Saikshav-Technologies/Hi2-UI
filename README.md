@@ -4,20 +4,20 @@ This is the frontend repository for the **Hi2** social media platform, built wit
 
 ## 🚀 Tech Stack
 
--   **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
--   **Library**: [React 19](https://react.dev/)
--   **Language**: [TypeScript](https://www.typescriptlang.org/)
--   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
--   **Icons**: [Lucide React](https://lucide.dev/)
--   **Validation**: [Zod](https://zod.dev/)
--   **Linting & Formatting**: ESLint, Prettier, Husky, Lint-staged
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Library**: [React 19](https://react.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Validation**: [Zod](https://zod.dev/)
+- **Linting & Formatting**: ESLint, Prettier, Husky, Lint-staged
 
 ## 🛠️ Prerequisites
 
 Ensure you have the following installed:
 
--   **Node.js**: v18.17.0 or higher (Recommended: LTS)
--   **npm**: v9.0.0 or higher
+- **Node.js**: v18.17.0 or higher (Recommended: LTS)
+- **npm**: v9.0.0 or higher
 
 ## 📦 Getting Started
 
@@ -52,7 +52,7 @@ Update `.env.local` with your local configuration if needed.
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [https://hi2-api.vercel.app](https://hi2-api.vercel.app) with your browser to see the result.
 
 ## 🐳 Docker
 
@@ -69,7 +69,7 @@ docker build -t hi2-ui:latest .
 **Development/Local:**
 
 ```bash
-docker run -p 3001:3001 -e NEXT_PUBLIC_API_URL=http://localhost:3000 hi2-ui:latest
+docker run -p 3001:3001 -e NEXT_PUBLIC_API_URL=https://hi2-api.vercel.app hi2-ui:latest
 ```
 
 **Production:**
@@ -104,12 +104,12 @@ docker-compose down
 ```
 
 The compose file includes:
+
 - **hi2-ui**: Frontend service on port 3001
 - Optional **hi2-api**: Backend service (uncomment to enable)
 - Optional **postgres**: Database service (uncomment to enable)
 
 To run both frontend and backend together, edit `docker-compose.yml` and uncomment the `hi2-api` and `postgres` services.
-
 
 ## 📂 Project Structure
 
@@ -138,11 +138,11 @@ Hi2-UI/
 
 ## 📜 Scripts
 
--   `npm run dev`: Starts the development server.
--   `npm run build`: Builds the application for production.
--   `npm start`: Starts the production server.
--   `npm run lint`: Runs ESLint.
--   `npm run prepare`: Sets up Husky for git hooks.
+- `npm run dev`: Starts the development server.
+- `npm run build`: Builds the application for production.
+- `npm start`: Starts the production server.
+- `npm run lint`: Runs ESLint.
+- `npm run prepare`: Sets up Husky for git hooks.
 
 ## 🤝 Contributing
 

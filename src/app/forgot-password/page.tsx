@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/constants';
 
 const splineSans = 'font-[family-name:var(--font-spline-sans)]';
 
@@ -19,7 +20,7 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/password-reset/request', {
+      const response = await fetch(`${API_BASE_URL}/auth/password-reset/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
