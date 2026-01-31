@@ -6,7 +6,7 @@ import { ProfileStats } from '@/mocks';
 import { useRef, useState } from 'react';
 import { getAccessToken } from '@/lib/auth';
 import { API_BASE_URL } from '@/lib/constants';
-import { useAvatarUrl } from '@/hooks/useAvatarUrl';
+import { useAuth } from '@/hooks/useAuth';
 
 interface ProfileHeaderProps {
   name: string;
@@ -19,8 +19,9 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
-  const { avatarUrl: currentAvatar, setAvatarUrl } = useAvatarUrl(avatar);
+  const { avatarUrl, setAvatarUrl } = useAuth();
   const [avatarKey, setAvatarKey] = useState<string | null>(null);
+  const currentAvatar = avatarUrl || avatar;
 
   const handleProfileImageClick = () => {
     fileInputRef.current?.click();
