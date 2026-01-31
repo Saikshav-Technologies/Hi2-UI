@@ -14,6 +14,18 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 's3-hi2-media.s3.ap-south-1.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'hi2-media.s3.ap-south-1.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'hi2-uploads.s3.us-east-1.amazonaws.com',
         port: '',
         pathname: '/**',
