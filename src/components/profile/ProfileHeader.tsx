@@ -30,19 +30,27 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
 
         if (!token || !userId) return;
 
+        const user = await fetch(`${API_BASE_URL}/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((res) => res.json());
+        user.data.avatarUrl && setAvatarKey(user.data.avatarUrl);
         // Construct the key - you might need to adjust this based on your backend response
         // For now, using a pattern like: avatars/{userId}/{timestamp}-avatar
-        const key = `avatars/${userId}`;
+        // const key = `avatars/${userId}`;
 
-        const response = await fetch(
-          `${API_BASE_URL}/users/avatar/presigned-url/?key=${key}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const key = user.data.avatarUrl;
 
+        console.log('Avatar key:', key);
+        // Fetch the avatar URL
+        const response = await fetch(`${API_BASE_URL}/users/avatar/presigned-url/?key=${key}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log('Response fetching avatar:', response);
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.data?.url) {
@@ -50,6 +58,7 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
             setAvatarKey(key);
           }
         }
+        console.log('Fetched avatar URL:', currentAvatar);
       } catch (error) {
         console.error('Error fetching avatar:', error);
         // Keep the default avatar on error
@@ -91,19 +100,16 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
         return;
       }
 
-      const presignedResponse = await fetch(
-        `${API_BASE_URL}/users/avatar/upload-url`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contentType: file.type,
-          }),
-        }
-      );
+      const presignedResponse = await fetch(`${API_BASE_URL}/users/avatar/upload-url`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contentType: file.type,
+        }),
+      });
 
       if (!presignedResponse.ok) {
         throw new Error('Failed to get upload URL');
@@ -132,9 +138,10 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
 
       console.log('Image uploaded successfully:', key);
 
+      console.log('Uploaded image key:', encodeURIComponent(key));
       // Step 3: Fetch the new presigned URL to display the image
       const newAvatarResponse = await fetch(
-        `${API_BASE_URL}/users/avatar/presigned-url/?key=${encodeURIComponent(key)}`,
+        `${API_BASE_URL}/users/avatar/presigned-url/?key=${(key)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
