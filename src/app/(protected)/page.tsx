@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import TopNavigation from '@/components/profile/TopNavigation';
 import ProfileHeader from '@/components/profile/ProfileHeader';
 import ProfileTabs from '@/components/profile/ProfileTabs';
@@ -6,9 +9,82 @@ import ContactsCard from '@/components/profile/ContactsCard';
 import CreatePost from '@/components/profile/CreatePost';
 import PostCard from '@/components/profile/PostCard';
 import { mockUserProfile, mockStats, mockContacts, mockPosts } from '@/mocks';
+import { getAccessToken, getUserIdFromToken } from '@/lib/auth';
+import { API_BASE_URL } from '@/lib/constants';
+
+interface UserApiResponse {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  username?: string | null;
+  bio?: string | null;
+  avatarUrl?: string | null;
+  birthday?: string | null;
+  isPrivate?: boolean;
+  createdAt?: string;
+  _count?: {
+    followers?: number;
+    following?: number;
+    posts?: number;
+  };
+}
+
+const isValidImageSrc = (value?: string | null): boolean => {
+  if (!value) return false;
+  return value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/');
+};
 
 export default function ProfilePage() {
-  const fullName = `${mockUserProfile.firstName} ${mockUserProfile.lastName}`;
+  const [userProfile, setUserProfile] = useState(mockUserProfile);
+  const [stats, setStats] = useState(mockStats);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const token = getAccessToken();
+        if (!token) return;
+
+        const userId = getUserIdFromToken(token);
+        if (!userId) return;
+
+        const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) return;
+
+        const result = await response.json();
+        if (!result?.success || !result?.data) return;
+
+        const user: UserApiResponse = result.data;
+
+        setUserProfile({
+          ...mockUserProfile,
+          id: user.id,
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          email: user.email || '',
+          bio: user.bio || mockUserProfile.bio,
+          avatar: isValidImageSrc(user.avatarUrl) ? user.avatarUrl! : mockUserProfile.avatar,
+        });
+
+        setStats({
+          posts: user._count?.posts ?? 0,
+          followers: user._count?.followers ?? 0,
+          following: user._count?.following ?? 0,
+        });
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  const fullName = `${userProfile.firstName} ${userProfile.lastName}`.trim();
 
   return (
     <div className="min-h-screen bg-[#f3f4f6]">
@@ -19,9 +95,9 @@ export default function ProfilePage() {
       <div className="max-w-7xl mx-auto px-0 md:px-6 md:pt-6">
         <ProfileHeader
           name={fullName}
-          avatar={mockUserProfile.avatar}
-          coverImage={mockUserProfile.coverImage}
-          stats={mockStats}
+          avatar={userProfile.avatar}
+          coverImage={userProfile.coverImage}
+          stats={stats}
         />
 
         {/* Profile Tabs */}
@@ -34,16 +110,16 @@ export default function ProfilePage() {
           {/* Left Sidebar */}
           <div className="lg:col-span-3 space-y-6">
             <IntroCard
-              bio={mockUserProfile.bio}
-              location={mockUserProfile.location}
-              work={mockUserProfile.work}
+              bio={userProfile.bio}
+              location={userProfile.location}
+              work={userProfile.work}
             />
             <ContactsCard contacts={mockContacts} />
           </div>
 
           {/* Center Feed - Takes remaining width */}
           <div className="lg:col-span-9 space-y-6">
-            <CreatePost userName={fullName} userAvatar={mockUserProfile.avatar} />
+            <CreatePost userName={fullName} userAvatar={userProfile.avatar} />
 
             {/* Posts Feed */}
             {mockPosts.map((post) => (
