@@ -1,10 +1,16 @@
-export const API_BASE_URL = 'http://localhost:3000/api';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
 export const AUTH_ENDPOINTS = {
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
   REFRESH: '/auth/refresh',
   LOGOUT: '/auth/logout',
+};
+
+export const USER_ENDPOINTS = {
+  PROFILE: '/users/profile',
+  AVATAR_UPLOAD: '/users/avatar/upload-url',
+  AVATAR_PRESIGNED: '/users/avatar/presigned-url',
 };
 
 export const TOKEN_KEYS = {
@@ -20,6 +26,7 @@ export const ROUTES = {
   REGISTER: '/registration',
   DASHBOARD: '/',
   HOME: '/home',
+  ONBOARDING: '/onboarding',
 };
 
 export const COUNTRIES = [
