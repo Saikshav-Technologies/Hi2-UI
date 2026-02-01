@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://hi2-api.vercel.app/api';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://hi2-api.vercel.app/api';
 
 export const AUTH_ENDPOINTS = {
   LOGIN: '/auth/login',
