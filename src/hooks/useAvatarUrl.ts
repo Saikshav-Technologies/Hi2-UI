@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAccessToken, getUserId, getUserIdFromToken } from '@/lib/auth';
+import { getUserId, getUserIdFromToken, getValidAccessToken } from '@/lib/auth';
 import { API_BASE_URL } from '@/lib/constants';
 
 const isValidImageSrc = (value?: string | null): boolean => {
@@ -17,7 +17,7 @@ export const useAvatarUrl = (initialAvatar?: string) => {
   useEffect(() => {
     const fetchUserAvatar = async () => {
       try {
-        const token = getAccessToken();
+        const token = await getValidAccessToken();
         const userId = getUserId() || getUserIdFromToken(token);
 
         if (!token || !userId) return;

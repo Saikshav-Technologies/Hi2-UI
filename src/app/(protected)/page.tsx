@@ -9,7 +9,7 @@ import ContactsCard from '@/components/profile/ContactsCard';
 import CreatePost from '@/components/profile/CreatePost';
 import PostCard from '@/components/profile/PostCard';
 import { mockUserProfile, mockStats, mockContacts, mockPosts } from '@/mocks';
-import { getAccessToken, getUserIdFromToken } from '@/lib/auth';
+import { getUserIdFromToken, getValidAccessToken } from '@/lib/auth';
 import { API_BASE_URL } from '@/lib/constants';
 
 interface UserApiResponse {
@@ -42,7 +42,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const token = getAccessToken();
+        const token = await getValidAccessToken();
         if (!token) return;
 
         const userId = getUserIdFromToken(token);

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Plus, Lock } from 'lucide-react';
 import { ProfileStats } from '@/mocks';
 import { useRef, useState } from 'react';
-import { getAccessToken } from '@/lib/auth';
+import { getValidAccessToken } from '@/lib/auth';
 import { API_BASE_URL } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -48,7 +48,7 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
 
     try {
       // Step 1: Get presigned URL from backend
-      const token = getAccessToken();
+      const token = await getValidAccessToken();
       if (!token) {
         setUploadError('Authentication required. Please log in again.');
         setIsUploading(false);
