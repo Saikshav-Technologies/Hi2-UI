@@ -46,3 +46,5 @@ export const COUNTRIES = [
   'South Africa',
   'New Zealand',
 ];
+
+export const DEFAULT_AVATAR_PATH = '/images/profile/default-avatar.png';

@@ -1,19 +1,20 @@
 'use client';
 
-import React, { createContext, useEffect, useState, useCallback, ReactNode } from 'react';
-import { User, LoginCredentials, RegisterCredentials } from '../../types/auth'; // Adjusted path
+import React, { createContext, useEffect, useState, useCallback, ReactNode, useMemo } from 'react';
+import { User, LoginCredentials, RegisterCredentials } from '../../types/auth';
 import { authApi } from '../../lib/api/auth';
 import {
-  setAccessToken,
-  clearTokens,
   getAccessToken,
   setRefreshToken,
   setUserId,
+  getUserId,
+  isTokenExpired,
+  setAccessToken,
+  clearTokens,
 } from '../../lib/auth';
 import { useRouter } from 'next/navigation';
-import { ROUTES, API_BASE_URL } from '../../lib/constants';
+import { ROUTES, API_BASE_URL, DEFAULT_AVATAR_PATH } from '../../lib/constants';
 import { usersApi } from '../../lib/api/users';
-import { getUserId } from '../../lib/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -30,7 +31,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string>('/images/profile/default-avatar.png');
+  const [avatarUrl, setAvatarUrl] = useState<string>(DEFAULT_AVATAR_PATH);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -40,8 +41,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const resolveAvatarUrl = async (token: string, avatarKey?: string | null): Promise<string> => {
-    if (!avatarKey) return '/images/profile/default-avatar.png';
+    if (!avatarKey) return DEFAULT_AVATAR_PATH;
     if (isValidImageSrc(avatarKey)) return avatarKey;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
 
     try {
       const response = await fetch(
@@ -50,8 +54,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          signal: controller.signal,
         }
       );
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
@@ -59,14 +65,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return data.data.url;
         }
       }
-    } catch (error) {
-      console.error('Failed to resolve avatar URL:', error);
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.error('Avatar processing timed out');
+      } else {
+        console.error('Failed to resolve avatar URL:', error);
+      }
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    return '/images/profile/default-avatar.png';
+    return DEFAULT_AVATAR_PATH;
   };
 
-  const initAuth = useCallback(async () => {
+  const initAuth = useCallback(async (signal?: AbortSignal) => {
     const token = getAccessToken();
     const userId = getUserId();
 
@@ -77,40 +88,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       // Fetch user profile using the userId from localStorage
-      const userData = await usersApi.getUserById(userId);
+      const userData = await usersApi.getUserById(userId, signal);
+      if (!userData) throw new Error('User data not found');
+
       setUser(userData);
       if (token) {
         const resolved = await resolveAvatarUrl(token, userData.avatarUrl);
         setAvatarUrl(resolved);
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'AbortError') return;
+
       console.error('Failed to fetch user:', error);
       // If fetch user fails, try refresh
       try {
-        const { accessToken } = await authApi.refreshToken();
+        const { accessToken } = await authApi.refreshToken(undefined, signal);
         setAccessToken(accessToken);
         // Retry fetching user - simplistic retry
-        const userData = await usersApi.getUserById(userId);
+        const userData = await usersApi.getUserById(userId, signal);
         setUser(userData);
         const resolved = await resolveAvatarUrl(accessToken, userData.avatarUrl);
         setAvatarUrl(resolved);
-      } catch (refreshError) {
+      } catch (refreshError: any) {
+        if (refreshError.name === 'AbortError') return;
+
         console.error('Refresh failed:', refreshError);
         clearTokens();
         setUser(null);
-        setAvatarUrl('/images/profile/default-avatar.png');
+        setAvatarUrl(DEFAULT_AVATAR_PATH);
+        // Ensure explicit feedback to user
         if (typeof window !== 'undefined') {
-          window.alert('Your session has expired. Please log in again.');
+          // Optional: You could use a toast here instead of alert
+          // window.alert('Your session has expired. Please log in again.');
         }
         router.replace(ROUTES.LOGIN);
       }
     } finally {
-      setIsLoading(false);
+      if (!signal?.aborted) {
+        setIsLoading(false);
+      }
     }
   }, []);
 
   useEffect(() => {
-    initAuth();
+    const controller = new AbortController();
+    initAuth(controller.signal);
+    return () => controller.abort();
   }, [initAuth]);
 
   const login = async (credentials: LoginCredentials) => {
@@ -160,25 +183,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       clearTokens();
       setUser(null);
-      setAvatarUrl('/images/profile/default-avatar.png');
+      setAvatarUrl(DEFAULT_AVATAR_PATH);
       setIsLoading(false);
       router.push(ROUTES.LOGIN);
     }
   };
 
+  const contextValue = useMemo<AuthContextType>(
+    () => ({
+      user,
+      avatarUrl,
+      setAvatarUrl,
+      isAuthenticated: !!user && !isTokenExpired(getAccessToken()),
+      isLoading,
+      login,
+      register,
+      logout,
+    }),
+    [user, avatarUrl, isLoading]
+  );
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        avatarUrl,
-        setAvatarUrl,
-        isAuthenticated: !!user,
-        isLoading,
-        login,
-        register,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
