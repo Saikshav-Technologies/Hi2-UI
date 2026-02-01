@@ -99,6 +99,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         clearTokens();
         setUser(null);
         setAvatarUrl('/images/profile/default-avatar.png');
+        if (typeof window !== 'undefined') {
+          window.alert('Your session has expired. Please log in again.');
+        }
+        router.replace(ROUTES.LOGIN);
       }
     } finally {
       setIsLoading(false);
