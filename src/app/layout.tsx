@@ -1,4 +1,5 @@
 import './globals.css';
+import { Toaster } from 'sonner';
 import type { Metadata } from 'next';
 import { Inter, Spline_Sans } from 'next/font/google';
 import { AuthProvider } from '../components/auth/AuthProvider';
@@ -19,7 +20,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} ${splineSans.variable} bg-background font-sans antialiased`} suppressHydrationWarning>
         {/* <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"> */}
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+          <Toaster richColors position="top-center" />
+        </AuthProvider>
         {/* </div> */}
       </body>
     </html>

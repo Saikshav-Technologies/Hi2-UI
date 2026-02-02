@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useEffect, useState, useCallback, ReactNode, useMemo } from 'react';
+import { toast } from 'sonner';
 import { User, LoginCredentials, RegisterCredentials } from '../../types/auth';
 import { authApi } from '../../lib/api/auth';
 import {
@@ -118,13 +119,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAvatarUrl(DEFAULT_AVATAR_PATH);
         // Ensure explicit feedback to user
         if (typeof window !== 'undefined') {
-          // Optional: You could use a toast here instead of alert
-          // window.alert('Your session has expired. Please log in again.');
+          toast.error('Your session has expired. Please log in again.');
         }
         router.replace(ROUTES.LOGIN);
+        // Don't set isLoading(false) if we are redirecting to prevent flashing unauthenticated state
+        return;
       }
     } finally {
-      if (!signal?.aborted) {
+      if (!signal?.aborted && !window.location.pathname.includes('/login')) {
+        // Only set loading to false if we're not redirecting to login
         setIsLoading(false);
       }
     }
