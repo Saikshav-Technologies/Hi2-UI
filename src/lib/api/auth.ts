@@ -1,18 +1,30 @@
 import { AUTH_ENDPOINTS, API_BASE_URL } from '../constants';
 import { LoginCredentials, RegisterCredentials } from '../../types/auth'; // Adjusted path
-import { AuthResponseData, ApiResponse } from '../../types/api'; // Adjusted path
+import { AuthResponseData, ApiResponse, RefreshTokenResponse } from '../../types/api'; // Adjusted path
 
 // Helper to handle API errors
 const handleResponse = async <T>(response: Response): Promise<T> => {
-  const data: ApiResponse<T> = await response.json();
+  let data: ApiResponse<T>;
 
-  // Success criteria: Status 200 AND success: true
+  try {
+    data = await response.json();
+  } catch (error) {
+    // Handle cases where response is not JSON (network errors, server down, etc.)
+    throw new Error('Unable to connect to server. Please try again.');
+  }
+
+  // Success: HTTP 200 AND success: true
   if (response.status === 200 && data.success === true) {
     return data.data as T;
   }
 
-  // Failure: Any other status OR success: false
-  // Use backend error message if available, otherwise standard message
+  // HTTP 401 - Authentication Error (Invalid credentials)
+  if (response.status === 401) {
+    const errorMessage = data.message || 'Invalid email or password. Please try again.';
+    throw new Error(errorMessage);
+  }
+
+  // Other errors - use backend message or fallback
   const errorMessage = data.message || 'Login failed. Please try again.';
   throw new Error(errorMessage);
 };
@@ -42,13 +54,14 @@ export const authApi = {
     });
   },
 
-  refreshToken: async (refreshToken?: string): Promise<{ accessToken: string }> => {
+  refreshToken: async (refreshToken?: string, signal?: AbortSignal): Promise<RefreshTokenResponse> => {
     // Refresh token is sent automatically via HttpOnly cookie
     const response = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.REFRESH}`, {
       method: 'POST',
       headers: refreshToken ? { 'Content-Type': 'application/json' } : undefined,
       body: refreshToken ? JSON.stringify({ refreshToken }) : undefined,
+      signal,
     });
-    return handleResponse<{ accessToken: string }>(response);
+    return handleResponse<RefreshTokenResponse>(response);
   },
 };

@@ -15,7 +15,7 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
 };
 
 export const usersApi = {
-  getUserById: async (userId: string): Promise<User> => {
+  getUserById: async (userId: string, signal?: AbortSignal): Promise<User> => {
     const token = await getValidAccessToken();
     if (!token) {
       throw new Error('Authentication required. Please log in again.');
@@ -26,6 +26,7 @@ export const usersApi = {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
+      signal,
     });
     return handleResponse<User>(response);
   },
