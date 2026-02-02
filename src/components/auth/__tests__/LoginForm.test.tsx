@@ -65,9 +65,6 @@ describe('LoginForm', () => {
             const passwordInput = screen.getByPlaceholderText(/password/i);
             expect(passwordInput).toHaveAttribute('type', 'password');
 
-            // Wait, looking at code: button inside password field.
-            // Let's rely on finding buttons by role. There are two buttons (submit and toggle).
-            // Submit has text "Login", toggle has icon.
             const buttons = screen.getAllByRole('button');
             const toggleBtn = buttons.find(b => !b.textContent?.includes('Login'));
 
@@ -91,6 +88,8 @@ describe('LoginForm', () => {
 
     describe('Form Submission', () => {
         test('calls login with credentials on successful submission', async () => {
+            mockLogin.mockResolvedValue({ success: true }); // MOCK: Return object check
+
             render(<LoginForm />);
 
             fireEvent.change(screen.getByPlaceholderText(/email/i), { target: { value: 'test@example.com' } });
@@ -107,6 +106,8 @@ describe('LoginForm', () => {
         });
 
         test('submission works even if enter key is pressed', async () => {
+            mockLogin.mockResolvedValue({ success: true }); // MOCK
+
             render(<LoginForm />);
             const emailInput = screen.getByPlaceholderText(/email/i);
             fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
@@ -137,7 +138,7 @@ describe('LoginForm', () => {
 
     describe('Error Handling', () => {
         test('displays error message from login failure', async () => {
-            mockLogin.mockRejectedValue(new Error('Invalid credentials'));
+            mockLogin.mockResolvedValue({ success: false, error: 'Invalid credentials' }); // MOCK: Return failure
 
             render(<LoginForm />);
 
@@ -151,7 +152,7 @@ describe('LoginForm', () => {
         });
 
         test('displays default error message if error has no message', async () => {
-            mockLogin.mockRejectedValue({});
+            mockLogin.mockResolvedValue({ success: false }); // MOCK: Default failure
 
             render(<LoginForm />);
             fireEvent.click(screen.getByRole('button', { name: /login/i }));

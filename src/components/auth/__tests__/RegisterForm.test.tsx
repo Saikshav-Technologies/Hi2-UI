@@ -11,6 +11,14 @@ jest.mock('next/navigation', () => ({
     useRouter: () => ({ push: jest.fn() }),
 }));
 
+jest.mock('sonner', () => ({
+    toast: {
+        success: jest.fn(),
+        error: jest.fn()
+    }
+}));
+import { toast } from 'sonner';
+
 // Mock Countries constant if needed, or rely on actual implementation 
 // logic if component imports it directly.
 
@@ -33,7 +41,7 @@ describe('RegisterForm', () => {
             expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
             expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
             // Phone placeholder is just numbers
-            expect(screen.getByPlaceholderText(/12345678/i)).toBeInTheDocument();
+            expect(screen.getByPlaceholderText(/06 12345678/i)).toBeInTheDocument();
 
             // comboboxes
             expect(screen.getByText('Select Country')).toBeInTheDocument();
@@ -102,6 +110,8 @@ describe('RegisterForm', () => {
 
     describe('Form Submission', () => {
         test('submits valid data correctly', async () => {
+            mockRegister.mockResolvedValue({ success: true }); // MOCK: Success
+
             render(<RegisterForm />);
 
             const formData = {
@@ -129,6 +139,7 @@ describe('RegisterForm', () => {
                     country: 'India',
                     contact: '1234567890'
                 });
+                expect(toast.success).toHaveBeenCalledWith('Account created successfully!');
             });
         });
     });
@@ -146,13 +157,12 @@ describe('RegisterForm', () => {
 
     describe('API Errors', () => {
         test('displays API error message', async () => {
-            mockRegister.mockRejectedValue(new Error('Email already exists'));
+            mockRegister.mockResolvedValue({ success: false, error: 'Email already exists' }); // MOCK: Failure
+
             render(<RegisterForm />);
 
             fillForm({}); // Uses default valid data
 
-            // For API error test, usually submit works if data is valid.
-            // But we must assume fillForm works.
             const form = screen.getByRole('button', { name: /register now/i }).closest('form');
             if (form) fireEvent.submit(form);
 
@@ -189,5 +199,5 @@ function fillForm(overrides: any) {
         fireEvent.change(comboboxes[1], { target: { value: data.gender } });
     }
 
-    fireEvent.change(screen.getByPlaceholderText(/12345678/i), { target: { value: data.phone } });
+    fireEvent.change(screen.getByPlaceholderText(/06 12345678/i), { target: { value: data.phone } });
 }

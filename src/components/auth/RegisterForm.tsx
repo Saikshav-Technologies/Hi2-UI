@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -7,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { COUNTRIES } from '../../lib/constants';
+import { toast } from 'sonner';
 
 export default function RegisterForm() {
     const router = useRouter();
@@ -50,9 +52,8 @@ export default function RegisterForm() {
             setError('Please enter a valid phone number (at least 10 digits)');
             return;
         }
-
         try {
-            await register({
+            const result = await register({
                 firstName,
                 lastName,
                 email,
@@ -61,8 +62,15 @@ export default function RegisterForm() {
                 country,
                 contact: phone
             });
-        } catch (err: any) {
-            setError(err.message || 'Registration failed. Please try again.');
+
+            if (result.success) {
+                toast.success('Account created successfully!');
+            } else {
+                setError(result.error || 'Registration failed. Please try again.');
+            }
+        } catch (error) {
+            setError('Registration failed. Please try again.');
+
         }
     };
 
@@ -118,35 +126,35 @@ export default function RegisterForm() {
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:py-6 relative">
                 {/* Registration Card with Logo on Top */}
-                <div className="w-full max-w-[380px] md:max-w-[420px] relative">
+                <div className="w-full max-w-[380px] md:max-w-[420px] relative mt-10 md:mt-12">
                     {/* Logo - Positioned on top right of card */}
-                    <div className="absolute -top-10 right-4 md:-top-12 md:right-6 z-20">
-                        <div className="w-[60px] h-[60px] md:w-[80px] md:h-[80px] lg:w-[90px] lg:h-[90px] flex items-center justify-center relative">
+                    <div className="absolute -top-6 right-6 md:-top-20 md:right-44 z-20">
+                        <div className="w-[50px] h-[50px] md:w-[60px] md:h-[60px] lg:w-[70px] lg:h-[70px] flex items-center justify-center relative">
                             <Image
                                 src="/images/login/logo.png"
                                 alt="Hi2 Logo"
                                 fill
                                 className="object-contain"
-                                sizes="(max-width: 768px) 60px, (max-width: 1024px) 80px, 90px"
+                                sizes="(max-width: 768px) 50px, (max-width: 1024px) 60px, 70px"
                             />
                         </div>
                     </div>
 
                     {/* Registration Card */}
-                    <div className="bg-white rounded-[18px] md:rounded-[20px] shadow-2xl px-6 py-5 md:px-7 md:py-6 z-10">
-                        <h2 className="text-lg md:text-xl font-semibold text-center text-[#37CE62] mb-4">
-                            Registration
+                    <div className="bg-white rounded-[18px] md:rounded-[20px] shadow-2xl px-6 py-4 md:px-7 md:py-5 z-10 w-full">
+                        <h2 className="text-lg md:text-xl font-semibold text-center text-[#37CE62] mb-3">
+                            Sign Up
                         </h2>
 
                         {error && (
-                            <div className="mb-3 p-2.5 bg-red-50 text-red-600 rounded-lg text-xs">
+                            <div className="mb-2 p-2 bg-red-50 text-red-600 rounded-lg text-xs">
                                 {error}
                             </div>
                         )}
 
-                        <form onSubmit={handleSubmit} className="space-y-3">
+                        <form onSubmit={handleSubmit} className="space-y-2">
                             {/* First Name & Last Name */}
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-2 gap-2">
                                 <div>
                                     <input
                                         type="text"
@@ -193,8 +201,22 @@ export default function RegisterForm() {
                                 />
                             </div>
 
+                            {/* Phone Number with Country Flag */}
+                            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
+                                <div className="flex items-center gap-1.5 ">
+                                    <span className="text-xl">🇳🇱</span>
+                                </div>
+                                <input
+                                    type="tel"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    className="flex-1 text-sm text-gray-900 bg-transparent border-0 outline-none"
+                                    placeholder="06 12345678"
+                                />
+                            </div>
+
                             {/* Country & Gender */}
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-2 gap-2">
                                 <div className="relative">
                                     <select
                                         value={country}
@@ -225,23 +247,8 @@ export default function RegisterForm() {
                                 </div>
                             </div>
 
-                            {/* Phone Number with Country Flag */}
-                            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-xl">🇳🇱</span>
-                                    <span className="text-sm text-gray-700">05</span>
-                                </div>
-                                <input
-                                    type="tel"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                    className="flex-1 text-sm text-gray-900 bg-transparent border-0 outline-none"
-                                    placeholder="12345678"
-                                />
-                            </div>
-
                             {/* Terms & Privacy */}
-                            <div className="text-xs text-gray-600 text-center">
+                            <div className="text-[10px] text-gray-600 text-center leading-tight pt-1">
                                 By clicking sign up. You agree to our{' '}
                                 <Link href="/terms" className="text-[#37CE62] hover:underline">
                                     terms
@@ -260,15 +267,15 @@ export default function RegisterForm() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-[#37CE62] rounded-full text-white font-semibold py-2.5 text-sm hover:bg-[#2db36c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#37CE62] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-[#37CE62] rounded-full text-white font-semibold py-2 text-sm hover:bg-[#2db36c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#37CE62] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isLoading ? 'Registering...' : 'Register Now'}
                             </button>
 
                             {/* Login Link */}
-                            <div className="text-center text-xs text-gray-600 pt-2">
+                            <div className="text-center text-xs text-gray-600 pt-1">
                                 Already have an account?{' '}
-                                <Link href="/login" className="font-semibold text-[#37CE62] hover:underline">
+                                <Link href="/login" className="font-semibold text-red-500 hover:underline">
                                     Log in
                                 </Link>
                             </div>
@@ -279,4 +286,3 @@ export default function RegisterForm() {
         </div>
     );
 }
-

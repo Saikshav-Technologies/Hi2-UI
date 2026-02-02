@@ -40,8 +40,8 @@ const TestComponent = () => {
             <div data-testid="is-authenticated">{context.isAuthenticated.toString()}</div>
             <div data-testid="user-name">{context.user?.firstName || 'NoUser'}</div>
 
-            <button onClick={() => context.login({ email: 't', password: 'p' }).catch(() => { })}>Login</button>
-            <button onClick={() => context.register({ email: 't', password: 'p', firstName: 'F', lastName: 'L', contact: '1', country: 'C', gender: 'M' }).catch(() => { })}>Register</button>
+            <button onClick={() => context.login({ email: 't', password: 'p' })}>Login</button>
+            <button onClick={() => context.register({ email: 't', password: 'p', firstName: 'F', lastName: 'L', contact: '1', country: 'C', gender: 'M' })}>Register</button>
             <button onClick={() => context.logout()}>Logout</button>
         </div>
     );
@@ -166,17 +166,13 @@ describe('AuthProvider', () => {
         it('handles login failure', async () => {
             (authApi.login as jest.Mock).mockRejectedValue(new Error('Invalid'));
 
-            // Catch error validation
-            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
-
+            // No console spy needed as console.error is gone
             await act(async () => {
                 screen.getByText('Login').click();
             });
 
             expect(authApi.login).toHaveBeenCalled();
             expect(screen.getByTestId('user-name')).toHaveTextContent('NoUser');
-
-            consoleSpy.mockRestore();
         });
     });
 

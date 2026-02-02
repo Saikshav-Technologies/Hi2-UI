@@ -23,8 +23,8 @@ interface AuthContextType {
   setAvatarUrl: (url: string) => void;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
-  register: (credentials: RegisterCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<{ success: boolean; error?: string }>;
+  register: (credentials: RegisterCredentials) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
 }
 
@@ -146,7 +146,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);
     try {
-      const { user, accessToken, refreshToken } = await authApi.login(credentials);
+      const { user, accessToken, refreshToken, success, message } = await authApi.login(credentials);
+      if (success === false) {
+        return { success: false, error: message || 'Login failed' };
+      }
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
       setUserId(user.id);
@@ -154,9 +157,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const resolved = await resolveAvatarUrl(accessToken, user.avatarUrl);
       setAvatarUrl(resolved);
       router.push(ROUTES.DASHBOARD);
-    } catch (error) {
-      console.error('Login failed', error);
-      throw error;
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Login failed' };
     } finally {
       setIsLoading(false);
     }
@@ -173,9 +176,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const resolved = await resolveAvatarUrl(accessToken, user.avatarUrl);
       setAvatarUrl(resolved);
       router.push(ROUTES.DASHBOARD);
-    } catch (error) {
-      console.error('Registration failed', error);
-      throw error;
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Registration failed' };
     } finally {
       setIsLoading(false);
     }
