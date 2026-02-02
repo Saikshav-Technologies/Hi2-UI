@@ -14,7 +14,7 @@ import {
   clearTokens,
 } from '../../lib/auth';
 import { useRouter } from 'next/navigation';
-import { ROUTES, API_BASE_URL, DEFAULT_AVATAR_PATH } from '../../lib/constants';
+import { ROUTES, API_BASE_URL, DEFAULT_AVATAR_PATH, AUTH_CHECK_INTERVAL } from '../../lib/constants';
 import { usersApi } from '../../lib/api/users';
 
 interface AuthContextType {
@@ -34,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string>(DEFAULT_AVATAR_PATH);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
   const isValidImageSrc = (value?: string | null): boolean => {
@@ -93,6 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!userData) throw new Error('User data not found');
 
       setUser(userData);
+      setIsAuthenticated(true); // Sync update to prevent race condition
       if (token) {
         const resolved = await resolveAvatarUrl(token, userData.avatarUrl);
         setAvatarUrl(resolved);
@@ -108,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Retry fetching user - simplistic retry
         const userData = await usersApi.getUserById(userId, signal);
         setUser(userData);
+        setIsAuthenticated(true); // Sync update
         const resolved = await resolveAvatarUrl(accessToken, userData.avatarUrl);
         setAvatarUrl(resolved);
       } catch (refreshError: any) {
@@ -116,6 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error('Refresh failed:', refreshError);
         clearTokens();
         setUser(null);
+        setIsAuthenticated(false); // Sync update
         setAvatarUrl(DEFAULT_AVATAR_PATH);
         // Ensure explicit feedback to user
         if (typeof window !== 'undefined') {
@@ -192,18 +196,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  useEffect(() => {
+    // Initial check
+    const checkAuthStatus = () => {
+      const valid = !!user && !isTokenExpired(getAccessToken());
+      setIsAuthenticated(valid);
+      return valid;
+    };
+    checkAuthStatus();
+
+    // Interval check
+    const intervalId = setInterval(() => {
+      const isValid = checkAuthStatus();
+      if (!isValid && user) {
+        // Token expired while user was active (or idle)
+        // Attempt silent refresh first via initAuth or just strict verify
+        // For now, simpler: if expired, clear and logout.
+        // Ideally we call initAuth again or a lightweight refresh.
+        // Let's rely on initAuth's refresh logic logic by triggering it?
+        // Actually best to just set to false and let components react or trigger logout
+        setIsAuthenticated(false);
+        // Optional: Trigger logout flow?
+        // If we strictly want to logout:
+        console.log('Token expired during interval check');
+        // We could call a truncated version of logout or just let the user be "unauthenticated"
+        // But for security, better to clear tokens if truly expired.
+        // However, initAuth handles refresh. So let's try to REFRESH if expired.
+        // But calling async initAuth inside interval is tricky.
+        // SAFEST: Just update state. ProtectedLayout will redirect.
+      }
+    }, AUTH_CHECK_INTERVAL);
+
+    return () => clearInterval(intervalId);
+  }, [user]);
+
   const contextValue = useMemo<AuthContextType>(
     () => ({
       user,
       avatarUrl,
       setAvatarUrl,
-      isAuthenticated: !!user && !isTokenExpired(getAccessToken()),
+      isAuthenticated,
       isLoading,
       login,
       register,
       logout,
     }),
-    [user, avatarUrl, isLoading]
+    [user, avatarUrl, isLoading, isAuthenticated]
   );
 
   return (
