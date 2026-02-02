@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Eye, EyeOff } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function LoginForm() {
@@ -20,11 +19,13 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
     try {
-      await login({ email, password });
-    } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
+      const result = await login({ email, password });
+      if (!result.success) {
+        setError(result.error || 'Login failed. Please try again.');
+      }
+    } catch (error) {
+      setError('Login failed. Please try again.');
     }
   };
 

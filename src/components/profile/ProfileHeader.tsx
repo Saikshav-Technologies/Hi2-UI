@@ -91,9 +91,6 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
         throw new Error('Failed to upload image');
       }
 
-      console.log('Image uploaded successfully:', key);
-
-      console.log('Uploaded image key:', encodeURIComponent(key));
       // Step 3: Fetch the new presigned URL to display the image
       const newAvatarResponse = await fetch(
         `${API_BASE_URL}/users/avatar/presigned-url/?key=${key}`,
@@ -186,9 +183,8 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
 
             {/* Camera/Edit Icon Badge (Bottom Left) */}
             <div
-              className={`absolute bottom-2 left-2 bg-[#131c61] rounded-full p-2 border-2 border-white transition-colors ${
-                isUploading ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-[#0f1549]'
-              }`}
+              className={`absolute bottom-2 left-2 bg-[#131c61] rounded-full p-2 border-2 border-white transition-colors ${isUploading ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-[#0f1549]'
+                }`}
               onClick={isUploading ? undefined : handleProfileImageClick}
               role="button"
               tabIndex={isUploading ? -1 : 0}

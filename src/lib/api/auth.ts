@@ -14,14 +14,19 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
   }
 
   // Success: HTTP 200 AND success: true
-  if (response.status === 200 && data.success === true) {
+  if ((response.status === 200 || response.status === 201) && data.success === true) {
     return data.data as T;
   }
 
   // HTTP 401 - Authentication Error (Invalid credentials)
   if (response.status === 401) {
     const errorMessage = data.message || 'Invalid email or password. Please try again.';
-    throw new Error(errorMessage);
+    const finalData = {
+      success: false,
+      message: errorMessage,
+      data: null
+    }
+    return finalData as T;
   }
 
   // Other errors - use backend message or fallback
