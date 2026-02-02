@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { toast } from 'sonner';
 
 export default function LoginForm() {
   const { login, isLoading } = useAuth();
@@ -19,14 +20,45 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Validate empty fields
+    if (!email.trim()) {
+      setError('Please enter your email address');
+      return;
+    }
+
+    if (!password.trim()) {
+      setError('Please enter your password');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
     try {
       const result = await login({ email, password });
       if (!result.success) {
-        setError(result.error || 'Login failed. Please try again.');
+        const errorMessage = result.error || 'Login failed. Please try again.';
+        toast.error(errorMessage);
       }
     } catch (error) {
-      setError('Login failed. Please try again.');
+      toast.error('Login failed. Please try again.');
     }
+  };
+
+  // Clear error when user modifies inputs
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (error) setError('');
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    if (error) setError('');
   };
 
   return (
@@ -88,7 +120,7 @@ export default function LoginForm() {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               className="block w-full px-0 py-2 text-sm md:text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-[#37CE62] transition-colors outline-none"
               placeholder="Email"
             />
@@ -100,7 +132,7 @@ export default function LoginForm() {
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 className="block w-full px-0 py-2 pr-10 text-sm md:text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-[#37CE62] transition-colors outline-none"
                 placeholder="Password"
               />
