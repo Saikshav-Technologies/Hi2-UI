@@ -95,6 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(userData);
       setIsAuthenticated(true); // Sync update to prevent race condition
+      setIsLoading(false);
       if (token) {
         const resolved = await resolveAvatarUrl(token, userData.avatarUrl);
         setAvatarUrl(resolved);
