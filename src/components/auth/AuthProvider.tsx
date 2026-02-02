@@ -130,7 +130,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (typeof window !== 'undefined') {
           toast.error('Your session has expired. Please log in again.');
         }
-        router.replace(ROUTES.LOGIN);
+        if (typeof window !== 'undefined' && window.location.pathname !== ROUTES.LOGIN) {
+          router.replace(ROUTES.LOGIN);
+        }
         // Don't set isLoading(false) if we are redirecting to prevent flashing unauthenticated state
         return;
       }
@@ -153,6 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { user, accessToken, refreshToken, success, message } =
         await authApi.login(credentials);
       if (success === false) {
+        setIsLoading(false);
         return { success: false, error: message || 'Login failed' };
       }
       setAccessToken(accessToken);
@@ -162,12 +165,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAuthenticated(true);
       const resolved = await resolveAvatarUrl(accessToken, user.avatarUrl);
       setAvatarUrl(resolved);
+      setIsLoading(false);
       router.push(ROUTES.DASHBOARD);
       return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message || 'Login failed' };
-    } finally {
       setIsLoading(false);
+      return { success: false, error: error.message || 'Login failed' };
     }
   };
 

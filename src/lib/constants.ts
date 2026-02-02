@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://hi2-api.vercel.app/api';
+export const API_BASE_URL = 'http://localhost:3000/api';
 export const AUTH_CHECK_INTERVAL = Number(process.env.NEXT_PUBLIC_AUTH_CHECK_INTERVAL || 60) * 1000;
 
 export const AUTH_ENDPOINTS = {
