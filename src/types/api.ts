@@ -17,4 +17,10 @@ export interface AuthResponseData {
     user: User;
     accessToken: string;
     refreshToken: string;
+    success?: boolean;
+    message?: string;
+}
+
+export interface RefreshTokenResponse {
+    accessToken: string;
 }

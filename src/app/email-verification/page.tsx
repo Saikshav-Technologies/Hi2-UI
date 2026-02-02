@@ -1,28 +1,45 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { API_BASE_URL } from '@/lib/constants';
+import { API_BASE_URL, ROUTES } from '@/lib/constants';
+import { useAuth } from '@/hooks/useAuth';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 const splineSans = 'font-[family-name:var(--font-spline-sans)]';
 
 export default function EmailVerificationPage() {
   const router = useRouter();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push(ROUTES.DASHBOARD);
+    }
+  }, [authLoading, isAuthenticated, router]);
+
   // Get email from localStorage or session (set from previous page)
-  React.useEffect(() => {
+  useEffect(() => {
     const storedEmail = localStorage.getItem('resetEmail');
     if (storedEmail) {
       setEmail(storedEmail);
     }
   }, []);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   const handleVerify = async () => {
     setError('');
@@ -43,19 +60,16 @@ export default function EmailVerificationPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/auth/password-reset/verify-otp`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: email,
-            otp: otpValue,
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/auth/password-reset/verify-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          otp: otpValue,
+        }),
+      });
 
       const data = await response.json();
 

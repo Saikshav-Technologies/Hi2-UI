@@ -29,7 +29,6 @@ export default function ProfileSettingPage() {
 
                 // Fetch user data
                 const response = await userApi.getUserById(userId);
-                console.log("==> response", response);
                 setUserData(response);
             } catch (err: any) {
                 console.error('Error fetching user data:', err);

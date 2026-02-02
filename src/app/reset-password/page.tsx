@@ -1,15 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
-import { API_BASE_URL } from '@/lib/constants';
+import { API_BASE_URL, ROUTES } from '@/lib/constants';
+import { useAuth } from '@/hooks/useAuth';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 const splineSans = 'font-[family-name:var(--font-spline-sans)]';
 
 export default function ResetPasswordPage() {
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -20,8 +23,15 @@ export default function ResetPasswordPage() {
   const [otp, setOtp] = useState('');
   const router = useRouter();
 
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push(ROUTES.DASHBOARD);
+    }
+  }, [authLoading, isAuthenticated, router]);
+
   // Get email and OTP from localStorage
-  React.useEffect(() => {
+  useEffect(() => {
+    if (authLoading || isAuthenticated) return;
     const storedEmail = localStorage.getItem('verifiedEmail');
     const storedOTP = localStorage.getItem('verifiedOTP');
 
@@ -31,11 +41,20 @@ export default function ResetPasswordPage() {
     } else {
       // If no email/OTP, redirect back to forgot password
       setError('Session expired. Please restart the password reset process.');
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         router.push('/forgot-password');
       }, 2000);
+      return () => clearTimeout(timeoutId);
     }
-  }, [router]);
+  }, [authLoading, isAuthenticated, router]);
+
+  if (authLoading || isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

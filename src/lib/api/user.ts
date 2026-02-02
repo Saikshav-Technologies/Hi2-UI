@@ -41,8 +41,6 @@ export const userApi = {
   updateProfile: async (profileData: UpdateProfileRequest): Promise<{ user: UserProfile }> => {
     const token = await getValidAccessToken();
 
-    console.log('========> Token', token);
-
     if (!token) {
       throw new Error('Authentication required. Please log in again.');
     }
