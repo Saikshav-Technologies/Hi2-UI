@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { ROUTES } from '../../lib/constants';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 export default function AuthLayout({
     children,
@@ -24,7 +25,7 @@ export default function AuthLayout({
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <p className="text-gray-600">Loading...</p>
+                <LoadingSpinner />
             </div>
         );
     }

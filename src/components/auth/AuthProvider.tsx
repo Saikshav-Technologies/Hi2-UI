@@ -14,7 +14,12 @@ import {
   clearTokens,
 } from '../../lib/auth';
 import { useRouter } from 'next/navigation';
-import { ROUTES, API_BASE_URL, DEFAULT_AVATAR_PATH, AUTH_CHECK_INTERVAL } from '../../lib/constants';
+import {
+  ROUTES,
+  API_BASE_URL,
+  DEFAULT_AVATAR_PATH,
+  AUTH_CHECK_INTERVAL,
+} from '../../lib/constants';
 import { usersApi } from '../../lib/api/users';
 
 interface AuthContextType {
@@ -130,8 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
     } finally {
-      if (!signal?.aborted && !window.location.pathname.includes('/login')) {
-        // Only set loading to false if we're not redirecting to login
+      if (!signal?.aborted) {
         setIsLoading(false);
       }
     }
@@ -146,7 +150,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);
     try {
-      const { user, accessToken, refreshToken, success, message } = await authApi.login(credentials);
+      const { user, accessToken, refreshToken, success, message } =
+        await authApi.login(credentials);
       if (success === false) {
         return { success: false, error: message || 'Login failed' };
       }
@@ -154,6 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setRefreshToken(refreshToken);
       setUserId(user.id);
       setUser(user);
+      setIsAuthenticated(true);
       const resolved = await resolveAvatarUrl(accessToken, user.avatarUrl);
       setAvatarUrl(resolved);
       router.push(ROUTES.DASHBOARD);
@@ -173,6 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setRefreshToken(refreshToken);
       setUserId(user.id);
       setUser(user);
+      setIsAuthenticated(true);
       const resolved = await resolveAvatarUrl(accessToken, user.avatarUrl);
       setAvatarUrl(resolved);
       router.push(ROUTES.DASHBOARD);
@@ -194,6 +201,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clearTokens();
       setUser(null);
       setAvatarUrl(DEFAULT_AVATAR_PATH);
+      setIsAuthenticated(false);
       setIsLoading(false);
       router.push(ROUTES.LOGIN);
     }
@@ -202,7 +210,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Initial check
     const checkAuthStatus = () => {
-      const valid = !!user && !isTokenExpired(getAccessToken());
+      const token = getAccessToken();
+      const valid = !!token && !isTokenExpired(token);
       setIsAuthenticated(valid);
       return valid;
     };
@@ -247,9 +256,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user, avatarUrl, isLoading, isAuthenticated]
   );
 
-  return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 }
