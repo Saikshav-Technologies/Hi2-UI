@@ -1,18 +1,34 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { API_BASE_URL } from '@/lib/constants';
+import { API_BASE_URL, ROUTES } from '@/lib/constants';
+import { useAuth } from '@/hooks/useAuth';
 
 const splineSans = 'font-[family-name:var(--font-spline-sans)]';
 
 export default function ForgotPasswordPage() {
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push(ROUTES.DASHBOARD);
+    }
+  }, [authLoading, isAuthenticated, router]);
+
+  if (authLoading || isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
