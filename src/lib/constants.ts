@@ -12,6 +12,7 @@ export const USER_ENDPOINTS = {
   PROFILE: '/users/profile',
   AVATAR_UPLOAD: '/users/avatar/upload-url',
   AVATAR_PRESIGNED: '/users/avatar/presigned-url',
+  PRIVACY: '/users/privacy',
 };
 
 export const TOKEN_KEYS = {

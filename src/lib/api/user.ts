@@ -37,6 +37,12 @@ export interface UserProfile {
   avatarUrl?: string;
 }
 
+export interface UpdatePrivacySettingsRequest {
+  isPrivate?: boolean;
+  showStatus?: boolean;
+  allowMessageRequests?: boolean;
+}
+
 export const userApi = {
   updateProfile: async (profileData: UpdateProfileRequest): Promise<{ user: UserProfile }> => {
     const token = await getValidAccessToken();
@@ -89,5 +95,26 @@ export const userApi = {
     });
 
     return handleResponse<{ user: UserProfile }>(response);
+  },
+
+  updatePrivacySettings: async (
+    privacySettings: UpdatePrivacySettingsRequest
+  ): Promise<{ success: boolean }> => {
+    const token = await getValidAccessToken();
+
+    if (!token) {
+      throw new Error('Authentication required. Please log in again.');
+    }
+
+    const response = await fetch(`${API_BASE_URL}${USER_ENDPOINTS.PRIVACY}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(privacySettings),
+    });
+
+    return handleResponse<{ success: boolean }>(response);
   },
 };
