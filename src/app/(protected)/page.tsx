@@ -66,12 +66,14 @@ export default function ProfilePage() {
           firstName: user.firstName || '',
           lastName: user.lastName || '',
           email: user.email || '',
+          username: user.username || '',
+          bio: user.bio || '',
+          birthday: user.birthday || '',
           avatar: isValidImageSrc(user.avatarUrl)
             ? user.avatarUrl!
             : '/images/profile/default-avatar.png',
           coverImage: mockUserProfile.coverImage,
           location: mockUserProfile.location,
-          bio: user.bio || '',
           work: mockUserProfile.work,
         });
 
