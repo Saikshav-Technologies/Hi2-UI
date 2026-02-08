@@ -183,7 +183,8 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
 
             {/* Camera/Edit Icon Badge (Bottom Left) */}
             <div
-              className={`absolute bottom-2 left-2 bg-[#131c61] rounded-full p-2 border-2 border-white transition-colors ${isUploading ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-[#0f1549]'
+              className={`absolute bottom-2 left-2 bg-[#131c61] rounded-full p-2 border-2 border-white transition-colors ${
+                isUploading ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-[#0f1549]'
               }`}
               onClick={isUploading ? undefined : handleProfileImageClick}
               role="button"
