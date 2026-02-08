@@ -38,10 +38,10 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
     }
 
     // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setUploadError('Image size must be less than 5MB');
-      return;
-    }
+    // if (file.size > 5 * 1024 * 1024) {
+    //   setUploadError('Image size must be less than 5MB');
+    //   return;
+    // }
 
     setIsUploading(true);
     setUploadError('');
@@ -184,7 +184,7 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
             {/* Camera/Edit Icon Badge (Bottom Left) */}
             <div
               className={`absolute bottom-2 left-2 bg-[#131c61] rounded-full p-2 border-2 border-white transition-colors ${isUploading ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-[#0f1549]'
-                }`}
+              }`}
               onClick={isUploading ? undefined : handleProfileImageClick}
               role="button"
               tabIndex={isUploading ? -1 : 0}
@@ -254,80 +254,75 @@ export default function ProfileHeader({ name, avatar, coverImage, stats }: Profi
             </div>
           )}
         </div>
+      </div>
 
-        {/* Stats Overlay (Desktop) */}
-        <div className="hidden md:flex absolute bottom-0 left-0 right-0 items-center justify-center py-6 bg-white/90 backdrop-blur-sm z-20">
-          <div className="flex items-center justify-between w-full max-w-7xl px-6 mx-auto">
-            {/* Left: Stats */}
-            <div className="flex space-x-10">
-              {/* Posts */}
-              <div className="flex flex-col items-center text-center">
-                <Image
-                  src="/images/profile/post-icon.png"
-                  alt="Posts"
-                  width={24}
-                  height={24}
-                  className="mb-1"
-                />
-                <span className="block font-bold text-[#2c3975] text-lg">{stats.posts}</span>
-                <span className="text-sm font-bold text-[#2c3975]">Post</span>
-              </div>
+      {/* Name Section - Below Profile Picture (Centered) - Desktop Only */}
+      <div className="hidden md:block text-center pt-6 pb-4 bg-white">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#2c3975]">{name}</h1>
+      </div>
 
-              {/* Followers */}
-              <div className="flex flex-col items-center text-center">
-                <Image
-                  src="/images/profile/follower-icon.png"
-                  alt="Followers"
-                  width={24}
-                  height={24}
-                  className="mb-1"
-                />
-                <span className="block font-bold text-[#2c3975] text-lg">
-                  {stats.followers.toLocaleString()}
-                </span>
-                <span className="text-sm font-bold text-[#2c3975]">Followers</span>
-              </div>
-
-              {/* Following */}
-              <div className="flex flex-col items-center text-center">
-                <Image
-                  src="/images/profile/following-icon.png"
-                  alt="Following"
-                  width={24}
-                  height={24}
-                  className="mb-1"
-                />
-                <span className="block font-bold text-[#2c3975] text-lg">
-                  {stats.following.toLocaleString()}
-                </span>
-                <span className="text-sm font-bold text-[#2c3975]">Following</span>
-              </div>
-            </div>
-
-            {/* Right: Action Buttons */}
-            <div className="flex items-center space-x-3">
-              {/* Add Story Button */}
-              <button className="bg-[#131c61] text-white px-6 py-2 rounded-full flex items-center space-x-2 font-bold hover:bg-[#0f1549] transition-colors">
-                <Plus className="w-4 h-4" />
-                <span>Add Story</span>
-              </button>
-
-              {/* Music Button */}
-              <button className="bg-[#131c61] text-white p-2 rounded-full border border-[#e2e5e9] hover:bg-[#0f1549] transition-colors">
-                <Image src="/images/profile/music-icon.png" alt="Music" width={20} height={20} />
-              </button>
-
-              {/* Lock Button */}
-              <button className="bg-[#131c61] text-white p-2 rounded-full hover:bg-[#0f1549] transition-colors">
-                <Lock className="w-5 h-5" />
-              </button>
+      {/* Stats Section (Desktop) - All in one line */}
+      <div className="hidden md:flex items-center justify-between py-6 px-8 bg-white border-t border-gray-200">
+        <div className="flex items-center space-x-16">
+          {/* Posts */}
+          <div className="flex items-center space-x-3">
+            <Image src="/images/profile/post-icon.png" alt="Posts" width={24} height={24} />
+            <div>
+              <span className="block font-bold text-[#2c3975] text-lg">{stats.posts}</span>
+              <span className="text-sm font-bold text-[#2c3975]">Post</span>
             </div>
           </div>
+
+          {/* Followers */}
+          <div className="flex items-center space-x-3">
+            <Image src="/images/profile/follower-icon.png" alt="Followers" width={24} height={24} />
+            <div>
+              <span className="block font-bold text-[#2c3975] text-lg">
+                {stats.followers.toLocaleString()}
+              </span>
+              <span className="text-sm font-bold text-[#2c3975]">Followers</span>
+            </div>
+          </div>
+
+          {/* Following */}
+          <div className="flex items-center space-x-3">
+            <Image
+              src="/images/profile/following-icon.png"
+              alt="Following"
+              width={24}
+              height={24}
+            />
+            <div>
+              <span className="block font-bold text-[#2c3975] text-lg">
+                {stats.following.toLocaleString()}
+              </span>
+              <span className="text-sm font-bold text-[#2c3975]">Following</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Action Buttons */}
+        <div className="flex items-center space-x-3">
+          {/* Add Story Button */}
+          <button className="bg-[#131c61] text-white px-6 py-2 rounded-full flex items-center space-x-2 font-bold hover:bg-[#0f1549] transition-colors whitespace-nowrap">
+            <Plus className="w-4 h-4" />
+            <span>Add Story</span>
+          </button>
+
+          {/* Music Button */}
+          <button className="bg-[#131c61] text-white p-2 rounded-full border border-[#e2e5e9] hover:bg-[#0f1549] transition-colors">
+            <Image src="/images/profile/music-icon.png" alt="Music" width={20} height={20} />
+          </button>
+
+          {/* Lock Button */}
+          <button className="bg-[#131c61] text-white p-2 rounded-full hover:bg-[#0f1549] transition-colors">
+            <Lock className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
       {/* Mobile Stats (Below Profile Picture) */}
-      <div className="md:hidden pt-24 pb-4 px-4 bg-white">
+      <div className="md:hidden pt-4 pb-4 px-4 bg-white">
         <h1 className="text-xl font-bold text-[#2c3975] text-center mb-4">{name}</h1>
 
         <div className="flex justify-center space-x-8 mb-4">

@@ -62,13 +62,19 @@ export default function ProfilePage() {
         const user: UserApiResponse = result.data;
 
         setUserProfile({
-          ...mockUserProfile,
           id: user.id,
           firstName: user.firstName || '',
           lastName: user.lastName || '',
           email: user.email || '',
-          bio: user.bio || mockUserProfile.bio,
-          avatar: isValidImageSrc(user.avatarUrl) ? user.avatarUrl! : mockUserProfile.avatar,
+          username: user.username || '',
+          bio: user.bio || '',
+          birthday: user.birthday || '',
+          avatar: isValidImageSrc(user.avatarUrl)
+            ? user.avatarUrl!
+            : '/images/profile/default-avatar.png',
+          coverImage: mockUserProfile.coverImage,
+          location: mockUserProfile.location,
+          work: mockUserProfile.work,
         });
 
         setStats({
